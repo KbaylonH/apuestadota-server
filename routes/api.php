@@ -9,5 +9,8 @@ Route::group(['middleware'=>'auth:api'], function(){
 
     Route::get('saldo', 'UsuarioController@getSaldo');
 
+    Route::get('recent_matches', 'UsuarioController@getRecentMatches');
+
+    Route::get('torneos', 'TorneoController@getAll');
 });
 
