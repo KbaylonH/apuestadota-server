@@ -16,16 +16,21 @@ class LoginController extends Controller
             $steamID64 = $repo->getSteamId64($postParams);
             $steamUser = $repo->getUser($steamID64);
 
+            \Log::info( json_encode($steamUser) );
+
             $usuarioRepo = new UsuarioRepo();
             $userDB = $usuarioRepo->findBySteamId($steamUser['steamid']);
 
             if($userDB == null){
                 $userDB = $usuarioRepo->createFromSteam($steamUser, $steamID64);
+            } else {
+                $userDB = $usuarioRepo->updateFromSteam($userDB, $steamUser);
             }
 
             return response()->json($userDB);
             
         } catch (\Exception $e){
+            \Log::error($e);
             return response()->json(['error'=>$e->getMessage()], 400);
         }
     }

@@ -16,8 +16,16 @@ class UsuarioRepo {
         $usuario->steamid = $steamUser['steamid'];
         $usuario->steamid64 = $steamID64;
         $usuario->foto = $steamUser['avatar'];
+        $usuario->steam_time_created = $steamUser['timecreated'];
         $usuario->api_token = Hash::make(Str::random(16));
         $usuario->save();
+        return $usuario;
+    }
+
+    public function updateFromSteam(Usuario $usuario, $steamUser){
+        $usuario->foto = $steamUser['avatar'];
+        $usuario->save();
+
         return $usuario;
     }
 
