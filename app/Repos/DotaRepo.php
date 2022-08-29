@@ -15,6 +15,11 @@ class DotaRepo {
         $this->curl = new Curl("https://api.opendota.com/api/");
     }
 
+    public function findMatch($matchID){
+        $this->curl->get("matches/".$matchID);
+        return $this->curl->response;
+    }
+
     public function setSteamID($steamID){
         $this->steamID = $steamID;
     }

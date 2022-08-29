@@ -31,7 +31,7 @@ class BalanceRepo {
 
     public function depositar($params){
         $transaccion = $this->insert($params, 'deposito');
-        $this->usuario->balance = $this->usuario->balance + $params['monto'];
+        $this->increase($params['monto']);
         $this->usuario->save();
 
         return ['transaccion'=>$transaccion, 'saldo'=>$this->usuario->balance];
@@ -39,10 +39,18 @@ class BalanceRepo {
 
     public function retirar($params){
         $transaccion = $this->insert($params, 'retiro');
-        $this->usuario->balance = $this->usuario->balance - $params['monto'];
-        $this->usuario->save();
-
+        $this->decrease($params['monto']);
         return ['transaccion'=>$transaccion, 'saldo'=>$this->usuario->balance];
+    }
+
+    public function decrease($monto){
+        $this->usuario->balance = $this->usuario->balance - $monto;
+        $this->usuario->save();
+    }
+
+    public function increase($monto){
+        $this->usuario->balance = $this->usuario->balance + $monto;
+        $this->usuario->save();
     }
 
 }

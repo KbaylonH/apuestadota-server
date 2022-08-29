@@ -14,12 +14,11 @@ class CreatePartidaTable extends Migration
     public function up()
     {
         Schema::create('partida', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('partidaid');
             $table->bigInteger('usuarioid');
-            $table->dateTime('fecha_partida');
-            $table->decimal('monto', 11, 2);
-            $table->bigInteger('match_id');
-            $table->string('estado');
+            $table->decimal('monto', 11, 2)->default(0);
+            $table->bigInteger('match_id')->nullable();
+            $table->string('estado')->default('0');
             $table->timestamps();
         });
     }

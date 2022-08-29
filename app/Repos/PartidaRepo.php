@@ -12,11 +12,11 @@ class PartidaRepo {
         $this->usuario = $usuario;
     }
 
-    public function create($monto, $match_id){
+    public function create($monto){
         $partida = new Partida();
         $partida->usuarioid = $this->usuario->usuarioid;
-        $partida->estado = '0';
-        $partida->fecha_partida = '';
+        $partida->estado = '0'; // pendiente
+        $partida->monto = $monto;
         $partida->save();
 
         return $partida;

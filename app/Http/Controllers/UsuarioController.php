@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Repos\DotaRepo;
+
 
 class UsuarioController extends Controller
 {
@@ -13,9 +13,4 @@ class UsuarioController extends Controller
         return response()->json(['saldo'=>number_format($usuario->balance, 2)]);
     }
 
-    public function getRecentMatches(){
-        $usuario = auth()->user();
-        $matches = (new DotaRepo($usuario->steamid))->getRecentMatches();
-        return response()->json(['matches'=>$matches]);
-    }
 }
