@@ -12,5 +12,9 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::get('recent_matches', 'UsuarioController@getRecentMatches');
 
     Route::get('torneos', 'TorneoController@getAll');
+
+    Route::post('depositar', 'BalanceController@depositar');
+    Route::post('retirar', 'BalanceController@retirar');
+    Route::get('transacciones', 'BalanceController@getAll');
 });
 

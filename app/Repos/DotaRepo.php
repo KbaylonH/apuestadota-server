@@ -4,23 +4,23 @@ use Curl\Curl;
 
 class DotaRepo {
 
-    private $steamID64;
+    private $steamID;
     private $curl;
 
-    public function __construct($steamID64 = null)
+    public function __construct($steamID = null)
     {
-        if($steamID64 !== null)
-            $this->steamID64 = $steamID64;
+        if($steamID !== null)
+            $this->steamID = $steamID;
 
         $this->curl = new Curl("https://api.opendota.com/api/");
     }
 
-    public function setSteamId64($steamID64){
-        $this->steamID64 = $steamID64;
+    public function setSteamID($steamID){
+        $this->steamID = $steamID;
     }
 
     public function getRecentMatches(){
-        $this->curl->get("players/".$this->steamID64."/recentMatches");
+        $this->curl->get("players/".$this->steamID."/recentMatches");
         return $this->curl->response;
     }
 

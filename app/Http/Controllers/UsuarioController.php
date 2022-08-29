@@ -15,7 +15,7 @@ class UsuarioController extends Controller
 
     public function getRecentMatches(){
         $usuario = auth()->user();
-        $matches = (new DotaRepo($usuario->steamid64))->getRecentMatches();
+        $matches = (new DotaRepo($usuario->steamid))->getRecentMatches();
         return response()->json(['matches'=>$matches]);
     }
 }

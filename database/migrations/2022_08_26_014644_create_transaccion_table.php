@@ -16,7 +16,9 @@ class CreateTransaccionTable extends Migration
         Schema::create('transaccion', function (Blueprint $table) {
             $table->bigIncrements('transaccionid');
             $table->string('estado')->nullable();
+            $table->string('metodo')->nullable();
             $table->string('tipo')->nullable();
+            $table->decimal('monto', 11, 2);
             $table->bigInteger('usuarioid');
             $table->timestamps();
         });

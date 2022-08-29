@@ -9,7 +9,7 @@ class Transaccion extends Model
     //
     protected $table = "transaccion";
     protected $primaryKey = "transaccionid";
-    protected $fillable = ['estado','tipo','usaurioid'];
+    protected $fillable = ['estado','tipo','metodo','usuarioid','monto'];
 
     public function usuario(){
         return $this->belongsTo(Usuario::class);

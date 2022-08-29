@@ -18,6 +18,7 @@ class UsuarioRepo {
         $usuario->foto = $steamUser['avatar'];
         $usuario->steam_time_created = $steamUser['timecreated'];
         $usuario->api_token = Hash::make(Str::random(16));
+        $usuario->balance = 0;
         $usuario->save();
         return $usuario;
     }
@@ -28,6 +29,5 @@ class UsuarioRepo {
 
         return $usuario;
     }
-
 
 }
