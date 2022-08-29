@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 class UsuarioRepo {
 
     public function findBySteamId($steam_id){
-        return Usuario::where('steamid', $steam_id)->first();
+        return Usuario::where('steamid64', $steam_id)->first();
     }
 
     public function createFromSteam($steamUser, $steamID64){
