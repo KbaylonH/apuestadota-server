@@ -18,5 +18,9 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::get('transacciones', 'BalanceController@getAll');
 
     Route::post('bet', 'PartidaController@apostar');
+
+    Route::get('apuestas', 'PartidaController@search');
+    Route::post('partidadota/{partida_id}', 'PartidaController@procesarPartida');
+    Route::get('apuesta/review', 'PartidaController@revisarPartidas');
 });
 

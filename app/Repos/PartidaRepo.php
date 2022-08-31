@@ -22,4 +22,12 @@ class PartidaRepo {
         return $partida;
     }
 
+    public function find($partida_id){
+        return Partida::where('usuarioid', $this->usuario->usuarioid)->where('partidaid', $partida_id)->first();
+    }
+
+    public function search(){
+        return Partida::where('usuarioid', $this->usuario->usuarioid)->orderBy('created_at', 'DESC')->get();
+    }
+
 }

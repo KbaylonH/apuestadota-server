@@ -50,6 +50,11 @@ class CheckMatches extends Command
             $match = (new DotaRepo)->findMatch($partida->match_id);
 
             if($match !== null){
+
+                if(isset($match->error)){
+                    continue;
+                }
+
                 // Obtenemos los jugadores de la partida
                 $players = $match->players;
 
