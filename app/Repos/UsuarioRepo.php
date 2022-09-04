@@ -12,7 +12,7 @@ class UsuarioRepo {
 
     public function createFromSteam($steamUser, $steamID64){
         $usuario = new Usuario();
-        $usuario->nickname = $steamUser['accountname'];
+        $usuario->nickname = $steamUser['personaname'];
         $usuario->steamid = (substr($steamID64, -16, 16) - 6561197960265728);
         $usuario->steamid64 = $steamID64;
         $usuario->foto = $steamUser['avatar'];
@@ -25,6 +25,7 @@ class UsuarioRepo {
 
     public function updateFromSteam(Usuario $usuario, $steamUser){
         $usuario->foto = $steamUser['avatar'];
+        //$usuario->login_at = date('Y-m-d H:i:s');
         $usuario->save();
 
         return $usuario;

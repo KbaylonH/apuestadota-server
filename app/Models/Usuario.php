@@ -27,7 +27,8 @@ class Usuario extends Authenticatable
         'telefono',
         'balance',
         'partida',
-        'foto'
+        'foto',
+        'login_at'
     ];
 
     /**

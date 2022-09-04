@@ -27,6 +27,7 @@ class CreateUsuarioTable extends Migration
             $table->string('foto')->nullable();
             $table->integer('steam_time_created')->nullable();
             $table->string('api_token');
+            $table->dateTime('login_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

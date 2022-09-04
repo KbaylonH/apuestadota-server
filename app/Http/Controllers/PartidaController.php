@@ -48,7 +48,7 @@ class PartidaController extends Controller {
             $matches = $dotaRepo->getRecentMatches();
 
             $filtered_matches = array_filter($matches, function($item) use ($partida){
-                return $item->game_mode == 22;
+                return ($item->start_time + 2) > strtotime($partida->created_at) && $item->game_mode == 22;
             });
 
             // Si no encuentra partida, el fronted realizara una nueva busqueda
