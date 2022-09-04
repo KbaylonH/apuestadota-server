@@ -3,6 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+Route::get("/", function(){
+    return response(app()->version());
+});
+
 Route::post('login_steam', 'LoginController@loginWithSteam');
 
 Route::group(['middleware'=>'auth:api'], function(){
