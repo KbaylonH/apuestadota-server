@@ -30,4 +30,7 @@ class PartidaRepo {
         return Partida::where('usuarioid', $this->usuario->usuarioid)->orderBy('created_at', 'DESC')->get();
     }
 
+    public function getEmptyApuesta(){
+        return Partida::where('usuarioid', $this->usuario->usuarioid)->where('estado','0')->first();
+    }
 }

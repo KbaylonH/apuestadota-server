@@ -10,20 +10,9 @@ class PartidaController extends Controller {
     
     public function apostar(Request $request){
         try {
-
             $user = auth()->user();
             $monto = $request->input('monto');
-
-            if($user->balance < $monto)
-                throw new \Exception("No cuenta con saldo disponible para realizar la apuesta");
-
-            $partida = (new PartidaRepo($user))->create($monto);
-
-            // Descontamos del saldo
-            $balanceRepo =  (new BalanceRepo);
-            $balanceRepo->setUsuario($user);
-            $balanceRepo->decrease($monto);
-
+            $partida = (new \App\Actions\ApostarAction)->execute($user, $monto);
             return response()->json(['match'=>$partida]);
         } catch (\Exception $e){
             \Log::error($e);
@@ -35,29 +24,8 @@ class PartidaController extends Controller {
     public function procesarPartida($partida_id){
         try {
             $user = auth()->user();
-            $repo = (new PartidaRepo($user));
-            $partida = $repo->find($partida_id);
 
-            if($partida == null)
-                throw new \Exception("La apuesta no existe en el sistema");
-            
-            if($partida->match_id !== null)
-                throw new \Exception("La apuesta ya fue puesta en partida de Dota");
-            
-            $dotaRepo = new DotaRepo($user->steamid);
-            $matches = $dotaRepo->getRecentMatches();
-
-            $filtered_matches = array_filter($matches, function($item) use ($partida){
-                return ($item->start_time + 2) > strtotime($partida->created_at) && $item->game_mode == 22;
-            });
-
-            // Si no encuentra partida, el fronted realizara una nueva busqueda
-            if(count($filtered_matches) < 1){
-                return response()->json(['match_id'=>null]);
-            }
-
-            $partida->match_id = $filtered_matches[0]->match_id;
-            $partida->save();
+            $partida = (new \App\Actions\ProcesarApuestaAction)->execute($user, $partida_id);
 
             // Al vincularse la partida de dota con la apuesta, devolvemos finished=true para que el fronted no realice una nueva busqueda
             return response()->json(['match_id'=>$partida->match_id]);
