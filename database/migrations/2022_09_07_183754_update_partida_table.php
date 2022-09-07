@@ -14,6 +14,8 @@ class UpdatePartidaTable extends Migration
     public function up()
     {
         Schema::table('partida', function (Blueprint $table){
+            $table->bigInteger('fecha_proceso')->nullable();
+            $table->bigInteger('fecha_finalizado')->nullable();
             $table->bigInteger('match_start_time', false, false)->nullable();
             $table->integer('match_hero_id', false, false)->nullable();
         });

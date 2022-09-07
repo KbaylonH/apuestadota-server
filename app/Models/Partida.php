@@ -8,7 +8,7 @@ class Partida extends Model
 {
     protected $table = "partida";
     protected $primaryKey = "partidaid";
-    protected $fillable = ['usuarioid','estado','match_id','monto','match_start_time','match_hero_id'];
+    protected $fillable = ['usuarioid','estado','match_id','monto','match_start_time','match_hero_id','fecha_proceso','fecha_finalizado'];
 
     public function usuario(){
         return $this->belongsTo(Usuario::class);
