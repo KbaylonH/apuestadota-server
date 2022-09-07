@@ -33,6 +33,7 @@ class ProcesarApuestaAction {
         $partida->match_id = $filtered_matches[0]->match_id;
         $partida->match_start_time = $filtered_matches[0]->start_time;
         $partida->match_hero_id = $filtered_matches[0]->hero_id;
+        $partida->fecha_proceso = time();
         $partida->save();
 
         return $partida;

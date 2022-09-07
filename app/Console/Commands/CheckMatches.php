@@ -85,7 +85,7 @@ class CheckMatches extends Command
                 }
 
                 // Marcar las apuestas de los otros participantes como perdidas (estado = 2)
-                Partida::where('match_id', $partida->match_id)->where('estado', '0')->update(['estado'=>'2']);
+                Partida::where('match_id', $partida->match_id)->where('estado', '0')->update(['estado'=>'2','fecha_finalizado'=>time()]);
             }
             
         }
