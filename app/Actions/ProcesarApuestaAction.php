@@ -18,7 +18,7 @@ class ProcesarApuestaAction {
             throw new \Exception("La apuesta ya fue puesta en partida de Dota");
 
         if(time() - strtotime($partida->created_at) > 1200){
-            $partida->estado = '3';
+            $partida->estado = '2';
             $partida->save();
             return $partida;
         }
