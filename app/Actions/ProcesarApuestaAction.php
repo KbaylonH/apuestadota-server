@@ -16,13 +16,18 @@ class ProcesarApuestaAction {
         
         if($partida->match_id !== null)
             throw new \Exception("La apuesta ya fue puesta en partida de Dota");
+
+        if(time() - strtotime($partida->created_at) > 1200){
+            $partida->estado = '3';
+            $partida->save();
+            return $partida;
+        }
         
         $dotaRepo = new DotaRepo($usuario->steamid);
         $matches = $dotaRepo->getRecentMatches();
 
         $filtered_matches = array_filter($matches, function($item) use ($partida){
-            //return $item->game_mode == 22;
-            return ($item->start_time + 2) > strtotime($partida->created_at) && $item->game_mode == 22 && $item->lobby_type == 7;
+            return $item->start_time - strtotime($partida->created_at) < 1200 && $item->game_mode == 22 && $item->lobby_type == 7;
         });
 
         // Si no encuentra partida, el fronted realizara una nueva busqueda
