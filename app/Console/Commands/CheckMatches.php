@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 use App\Models\Usuario;
 use App\Models\Partida;
 use App\Repos\DotaRepo;
+use App\Repos\BalanceRepo;
 
 class CheckMatches extends Command
 {
@@ -70,13 +71,12 @@ class CheckMatches extends Command
 
                     // Validamos si el ganador esta en nuestra BD
                     if($user !== null){
-
                         // buscamos su partida (apuesta)
                         $user_partida = Partida::where('match_id', $partida->match_id)->where('usuarioid', $user->usuarioid)->first();
 
-                        // Se aumenta su saldo con su respectivo 40%
-                        $user->balance = $user->balance + ($user_partida->monto * 1.4);
-                        $user->save();
+                        $balanceRepo = new BalanceRepo();
+                        $balanceRepo->setUsuario($user);
+                        $balanceRepo->increase(($user_partida->monto * 1.4), 'balance_prueba');
                         
                         // marcado como ganado
                         $user_partida->estado = '1'; 

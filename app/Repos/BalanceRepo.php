@@ -43,13 +43,21 @@ class BalanceRepo {
         return ['transaccion'=>$transaccion, 'saldo'=>$this->usuario->balance];
     }
 
-    public function decrease($monto){
-        $this->usuario->balance = $this->usuario->balance - $monto;
+    /*
+    @param $monto decimal monto a descontar del saldo
+    @param $field campo donde se hara el descuento, por defecto es 'balance'
+    */
+    public function decrease($monto, $field = 'balance'){
+        $this->usuario->{$field} = $this->usuario->{$field} - $monto;
         $this->usuario->save();
     }
 
-    public function increase($monto){
-        $this->usuario->balance = $this->usuario->balance + $monto;
+    /*
+    @param $monto decimal monto a añadir al saldo
+    @param $field campo donde se hara el incremento del saldo, por defecto es 'balance'
+    */
+    public function increase($monto, $field = 'balance'){
+        $this->usuario->{$field} = $this->usuario->{$field} + $monto;
         $this->usuario->save();
     }
 

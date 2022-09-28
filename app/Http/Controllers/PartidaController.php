@@ -11,8 +11,8 @@ class PartidaController extends Controller {
     public function apostar(Request $request){
         try {
             $user = auth()->user();
-            $monto = $request->input('monto');
-            $partida = (new \App\Actions\ApostarAction)->execute($user, $monto);
+            $params = $request->only('monto');
+            $partida = (new \App\Actions\ApostarAction)->execute($user, $params, $request);
             return response()->json(['match'=>$partida]);
         } catch (\Exception $e){
             \Log::error($e);

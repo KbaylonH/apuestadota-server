@@ -26,5 +26,8 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::get('apuestas', 'PartidaController@search');
     Route::post('partidadota/{partida_id}', 'PartidaController@procesarPartida');
     Route::get('apuesta/review', 'PartidaController@revisarPartidas');
+
+    Route::get('profile', 'UsuarioController@getProfile');
+    Route::put('profile', 'UsuarioController@update');
 });
 

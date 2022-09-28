@@ -28,7 +28,11 @@ class Usuario extends Authenticatable
         'balance',
         'partida',
         'foto',
-        'login_at'
+        'login_at',
+        'ref_code',
+        'dni',
+        'dni_url',
+        'dni_status'
     ];
 
     /**

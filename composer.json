@@ -14,7 +14,8 @@
         "guzzlehttp/guzzle": "^6.3.1|^7.0.1",
         "laravel/framework": "^7.29",
         "laravel/tinker": "^2.5",
-        "php-curl-class/php-curl-class": "^9.6"
+        "php-curl-class/php-curl-class": "^9.6",
+        "lyracom/rest-php-sdk": "4.0.*"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

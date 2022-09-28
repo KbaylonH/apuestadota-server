@@ -27,7 +27,8 @@ class ProcesarApuestaAction {
         $matches = $dotaRepo->getRecentMatches();
 
         $filtered_matches = array_filter($matches, function($item) use ($partida){
-            return $item->start_time - strtotime($partida->created_at) < 1200 && $item->game_mode == 22 && $item->lobby_type == 7;
+            $diff = $item->start_time - strtotime($partida->created_at);
+            return $diff > 0 && $diff < 1200 && $item->game_mode == 22 && $item->lobby_type == 7 && $item->party_size == 1;
         });
 
         // Si no encuentra partida, el fronted realizara una nueva busqueda

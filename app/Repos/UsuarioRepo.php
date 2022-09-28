@@ -15,20 +15,28 @@ class UsuarioRepo {
         $usuario->nickname = $steamUser['personaname'];
         $usuario->steamid = (substr($steamID64, -16, 16) - 6561197960265728);
         $usuario->steamid64 = $steamID64;
-        $usuario->foto = $steamUser['avatar'];
+        $usuario->foto = $steamUser['avatarfull'];
         $usuario->steam_time_created = $steamUser['timecreated'];
         $usuario->api_token = Hash::make(Str::random(16));
         $usuario->balance = 0;
+        $usuario->ref_code = strtoupper(Str::random(10));
         $usuario->save();
         return $usuario;
     }
 
     public function updateFromSteam(Usuario $usuario, $steamUser){
-        $usuario->foto = $steamUser['avatar'];
+        $usuario->foto = $steamUser['avatarfull'];
+        if($usuario->ref_code == null || $usuario->ref_code == '')
+            $usuario->ref_code = strtoupper(Str::random(10));
         //$usuario->login_at = date('Y-m-d H:i:s');
         $usuario->save();
 
         return $usuario;
     }
 
+    public function update(Usuario $usuario, $params){
+        $usuario->fill($params);
+        $usuario->save();
+        return $usuario;
+    }
 }
