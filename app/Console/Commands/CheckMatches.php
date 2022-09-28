@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @author Kevin Baylón <kbaylonh@outlook.com>
+ */
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -8,6 +10,7 @@ use App\Models\Usuario;
 use App\Models\Partida;
 use App\Repos\DotaRepo;
 use App\Repos\BalanceRepo;
+use Illuminate\Support\Facades\Log;
 
 class CheckMatches extends Command
 {
@@ -47,47 +50,52 @@ class CheckMatches extends Command
 
         foreach($partidas as $partida){
 
-            // Buscamos la partida con el api de dota (OJO: aun desconozco cual es la variable que indica si la partida ha terminado)
-            $match = (new DotaRepo)->findMatch($partida->match_id);
+            try {
+                // Buscamos la partida con el api de dota
+                $match = (new DotaRepo)->findMatch($partida->match_id);
 
-            if($match !== null){
+                if($match !== null){
 
-                if(isset($match->error)){
-                    continue;
-                }
+                    if(isset($match->error))
+                        throw new \Exception("Hubo un error al obtener la informacion de la partida de dota #" . $partida->match_id. ":" . $match->error);
 
-                // Obtenemos los jugadores de la partida
-                $players = $match->players;
+                    // Obtenemos los jugadores de la partida
+                    $players = $match->players;
 
-                // Filtramos a los que ganaron
-                $winners = array_filter($players, function($item){
-                    return $item->win == 1 && $item->account_id !== null;
-                });
+                    // Filtramos a los que ganaron
+                    $winners = array_filter($players, function($item){
+                        return $item->win == 1 && $item->account_id !== null;
+                    });
 
-                // Recorremos a los ganadores
-                foreach($winners as $winner){
-                    // Obtenemos el usuario mediante el steamid
-                    $user = Usuario::where('steamid', $winner->account_id)->first();
+                    // Recorremos a los ganadores
+                    foreach($winners as $winner){
+                        // Obtenemos el usuario mediante el steamid
+                        $user = Usuario::where('steamid', $winner->account_id)->first();
 
-                    // Validamos si el ganador esta en nuestra BD
-                    if($user !== null){
-                        // buscamos su partida (apuesta)
-                        $user_partida = Partida::where('match_id', $partida->match_id)->where('usuarioid', $user->usuarioid)->first();
+                        // Validamos si el ganador esta en nuestra BD
+                        if($user !== null){
 
-                        $balanceRepo = new BalanceRepo();
-                        $balanceRepo->setUsuario($user);
-                        $balanceRepo->increase(($user_partida->monto * 1.4), 'balance_prueba');
-                        
-                        // marcado como ganado
-                        $user_partida->estado = '1'; 
-                        $user_partida->save();
+                            // buscamos su partida (apuesta)
+                            $user_partida = Partida::where('match_id', $partida->match_id)->where('usuarioid', $user->usuarioid)->first();
+
+                            // Aumentar saldo
+                            $balanceRepo = new BalanceRepo();
+                            $balanceRepo->setUsuario($user);
+                            $balanceRepo->increase(($user_partida->monto * 1.4), 'balance_prueba');
+                            
+                            // marcado como ganado
+                            $user_partida->fecha_finalizado = time(); 
+                            $user_partida->estado = '1'; 
+                            $user_partida->save();
+                        }
                     }
-                }
 
-                // Marcar las apuestas de los otros participantes como perdidas (estado = 2)
-                Partida::where('match_id', $partida->match_id)->where('estado', '0')->update(['estado'=>'2','fecha_finalizado'=>time()]);
-            }
-            
+                    // Marcar las apuestas de los otros participantes como perdidas (estado = 2)
+                    Partida::where('match_id', $partida->match_id)->where('estado', '0')->update(['estado'=>'2','fecha_finalizado'=>time()]);
+                }
+            } catch (\Exception $e) {
+                Log::error($e);
+            }            
         }
 
     }
