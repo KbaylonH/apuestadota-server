@@ -12,7 +12,7 @@ class Partida extends Model
         'usuarioid','estado','match_id',
         'monto','match_start_time','match_hero_id',
         'fecha_proceso','fecha_finalizado',
-        'isp', 'ip_address', 'pc_name', 'voucher', 'ganancia'];
+        'isp', 'ip_address', 'pc_name'];
 
     public function usuario(){
         return $this->belongsTo(Usuario::class);

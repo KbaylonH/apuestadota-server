@@ -26,6 +26,7 @@ class Usuario extends Authenticatable
         'email',
         'telefono',
         'balance',
+        'balance_prueba',
         'partida',
         'foto',
         'login_at',
