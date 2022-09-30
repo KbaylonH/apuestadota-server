@@ -7,6 +7,11 @@ Route::get("/", function(){
     return response(app()->version());
 });
 
+Route::view('payment_success', 'payment_success')->name('payment.success');
+Route::view('payment_error', 'payment_error')->name('payment.error');
+
+Route::post('izipay_finished', 'BalanceController@checkIzipayPayment');
+
 Route::post('login_steam', 'LoginController@loginWithSteam');
 
 Route::group(['middleware'=>'auth:api'], function(){
@@ -18,6 +23,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::get('torneos', 'TorneoController@getAll');
 
     Route::post('depositar', 'BalanceController@depositar');
+
     Route::post('retirar', 'BalanceController@retirar');
     Route::get('transacciones', 'BalanceController@getAll');
 
@@ -29,5 +35,7 @@ Route::group(['middleware'=>'auth:api'], function(){
 
     Route::get('profile', 'UsuarioController@getProfile');
     Route::put('profile', 'UsuarioController@update');
+
+    Route::get('referidos', 'ReferidoController');
 });
 

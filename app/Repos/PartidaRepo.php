@@ -12,11 +12,12 @@ class PartidaRepo {
         $this->usuario = $usuario;
     }
 
-    public function create($monto, $params = null){
+    public function create($monto, $multiplcador = 1.4, $params = null){
         $partida = new Partida();
         $partida->usuarioid = $this->usuario->usuarioid;
         $partida->estado = '0'; // pendiente
         $partida->monto = $monto;
+        $partida->multiplicador = $multiplcador;
 
         if(isset($params['isp']))
         $partida->isp = $params['isp'];

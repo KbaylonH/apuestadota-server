@@ -81,7 +81,7 @@ class CheckMatches extends Command
                             // Aumentar saldo
                             $balanceRepo = new BalanceRepo();
                             $balanceRepo->setUsuario($user);
-                            $balanceRepo->increase(($user_partida->monto * 1.4), 'balance_prueba');
+                            $balanceRepo->increase(($user_partida->monto * $user_partida->multiplicador), 'balance_prueba');
                             
                             // marcado como ganado
                             $user_partida->fecha_finalizado = time(); 

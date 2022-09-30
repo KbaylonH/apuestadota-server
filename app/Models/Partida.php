@@ -10,7 +10,7 @@ class Partida extends Model
     protected $primaryKey = "partidaid";
     protected $fillable = [
         'usuarioid','estado','match_id',
-        'monto','match_start_time','match_hero_id',
+        'monto', 'multiplicador', 'match_start_time','match_hero_id',
         'fecha_proceso','fecha_finalizado',
         'isp', 'ip_address', 'pc_name'];
 

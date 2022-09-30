@@ -21,21 +21,14 @@ class BalanceController extends Controller {
     }
 
     public function depositar(Request $request){
+        $usuario = auth()->user();
+        $params = $request->only('proveedor', 'monto', 'ref_code');
+        return (new \App\Actions\DepositarAction)->execute($params, $usuario);
+    }
 
-        try {
-
-            $user = auth()->user();
-            $params = $request->only('metodo', 'monto');
-            $this->repo->setUsuario($user);
-            $rpta = $this->repo->depositar($params);
-
-            return response()->json( $rpta );
-
-        } catch (\Exception $e) {
-            \Log::error($e);
-            return response()->json(['error'=>$e->getMessage()], 400);
-        }
-
+    public function checkIzipayPayment(Request $request){
+        $params = $request->all();
+        return (new \App\Actions\CheckIzipayAction)->execute($params);
     }
 
     public function retirar(Request $request){

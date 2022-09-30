@@ -2,12 +2,24 @@
 
 use App\Models\Usuario;
 use App\Models\Transaccion;
-
-
+use App\Models\Deposito;
+use Illuminate\Support\Str;
 
 class BalanceRepo {
 
     private $usuario;
+
+    public function crearDeposito($params){
+        $orden_id = 'DEP_'.strtoupper(Str::random(16));
+        return Deposito::create([
+            'usuarioid' => $params['usuarioid'],
+            'monto' => $params['monto'],
+            'ref_code' => $params['ref_code'],
+            'estado' => 0,
+            'proveedor' => $params['proveedor'],
+            'orden_id' => $orden_id,
+        ]);
+    }
 
     public function setUsuario(Usuario $user){
         $this->usuario = $user;
@@ -15,6 +27,10 @@ class BalanceRepo {
 
     public function getAll(){
         return Transaccion::where('usuarioid', $this->usuario->usuarioid)->get();
+    }
+
+    public function getDepositoOrden($orden_id){
+        return Deposito::where('orden_id', $orden_id)->first();
     }
 
     public function insert($params, $tipo){
