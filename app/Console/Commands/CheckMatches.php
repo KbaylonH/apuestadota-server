@@ -78,15 +78,17 @@ class CheckMatches extends Command
                             // buscamos su partida (apuesta)
                             $user_partida = Partida::where('match_id', $partida->match_id)->where('usuarioid', $user->usuarioid)->first();
 
-                            // Aumentar saldo
-                            $balanceRepo = new BalanceRepo();
-                            $balanceRepo->setUsuario($user);
-                            $balanceRepo->increase(($user_partida->monto * $user_partida->multiplicador), $user->balance_switch);
-                            
-                            // marcado como ganado
-                            $user_partida->fecha_finalizado = time(); 
-                            $user_partida->estado = '1'; 
-                            $user_partida->save();
+                            if($user_partida !== null){
+                                // Aumentar saldo
+                                $balanceRepo = new BalanceRepo();
+                                $balanceRepo->setUsuario($user);
+                                $balanceRepo->increase(($user_partida->monto * $user_partida->multiplicador), $user->balance_switch);
+                                
+                                // marcado como ganado
+                                $user_partida->fecha_finalizado = time(); 
+                                $user_partida->estado = '1'; 
+                                $user_partida->save();
+                            }
                         }
                     }
 

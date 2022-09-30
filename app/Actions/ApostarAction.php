@@ -24,7 +24,7 @@ class ApostarAction {
         if($emptyApuesta !== null)
             throw new \Exception("Solo se puede colocar como máximo 1 apuesta a la vez");
 
-        if($usuario->balance < $monto)
+        if($usuario->{$usuario->balance_switch} < $monto)
             throw new \Exception("No cuenta con saldo disponible para realizar la apuesta");
 
         // Si el usuario realizó 19 apuestas durante el mes, para esta apuesta el multiplicador de apuesta es 2
