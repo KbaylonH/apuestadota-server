@@ -17,6 +17,7 @@ Route::post('login_steam', 'LoginController@loginWithSteam');
 Route::group(['middleware'=>'auth:api'], function(){
 
     Route::get('saldo', 'UsuarioController@getSaldo');
+    Route::put('saldo/switch', 'UsuarioController@switchSaldo');
 
     Route::get('recent_matches', 'UsuarioController@getRecentMatches');
 

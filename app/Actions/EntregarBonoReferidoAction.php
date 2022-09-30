@@ -10,7 +10,7 @@ class EntregarBonoReferidoAction {
         $usuario = Usuario::where('ref_code', $deposito->ref_code)->first();
         $balanceRepo = new BalanceRepo();
         $balanceRepo->setUsuario($usuario);
-        $balanceRepo->increase(1);
+        $balanceRepo->increase(1, $usuario->balance_switch);
     }
 
 }

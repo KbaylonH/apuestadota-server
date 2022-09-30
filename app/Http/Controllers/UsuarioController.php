@@ -11,7 +11,13 @@ class UsuarioController extends Controller
     //
     public function getSaldo(){
         $usuario = auth()->user();
-        return response()->json(['saldo'=>number_format($usuario->balance, 2)]);
+        return response()->json(['saldo'=>number_format($usuario->balance, 2), 'saldo_prueba'=>number_format($usuario->balance_prueba, 2), 'saldo_switch'=>$usuario->balance_switch]);
+    }
+
+    public function switchSaldo(){
+        $usuario = auth()->user();
+        $usuario->update(['balance_switch' => ($usuario->balance_switch == 'balance' ? 'balance_prueba' : 'balance')]);
+        return response()->json(['saldo_switch'=>$usuario->balance_switch]);
     }
 
     public function getProfile(){

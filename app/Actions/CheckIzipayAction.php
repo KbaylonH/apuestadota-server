@@ -29,7 +29,7 @@ class CheckIzipayAction {
             $deposito->tarjeta_numero = $formAnswer['transactions'][0]['transactionDetails']['paymentMethodDetails']['id'];
             $deposito->save();
             $balanceRepo->setUsuario($user);
-            $balanceRepo->increase($deposito->monto);
+            $balanceRepo->increase($deposito->monto, $user->balance_switch);
             
             if($deposito->ref_code !== null && $deposito->ref_code !== '')
                 (new EntregarBonoReferidoAction)->execute($deposito);

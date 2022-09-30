@@ -10,7 +10,7 @@ class EntregarBonoDepositoAction {
         $usuario = Usuario::find($deposito->usuarioid);
         $balanceRepo = new BalanceRepo();
         $balanceRepo->setUsuario($usuario);
-        $balanceRepo->increase($deposito->monto * 0.1);
+        $balanceRepo->increase($deposito->monto * 0.1, $usuario->balance_switch);
         $deposito->update(['estado'=>3]);
     }
 

@@ -46,7 +46,7 @@ class ApostarAction {
         
         $balanceRepo =  (new BalanceRepo);
         $balanceRepo->setUsuario($usuario);
-        $balanceRepo->decrease($monto, 'balance_prueba');
+        $balanceRepo->decrease($monto, $usuario->balance_switch);
 
         return $partida;
     }
