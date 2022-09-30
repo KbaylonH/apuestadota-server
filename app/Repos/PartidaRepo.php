@@ -2,6 +2,8 @@
 
 use App\Models\Usuario;
 use App\Models\Partida;
+use App\Models\Test\Apuesta;
+use App\Models\Test\ApuestaTest;
 
 class PartidaRepo {
 
@@ -13,7 +15,9 @@ class PartidaRepo {
     }
 
     public function create($monto, $multiplcador = 1.4, $params = null){
-        $partida = new Partida();
+        
+        $partida = $this->usuario->test_mode == 1 ? new ApuestaTest() : new Partida();
+
         $partida->usuarioid = $this->usuario->usuarioid;
         $partida->estado = '0'; // pendiente
         $partida->monto = $monto;
@@ -41,10 +45,12 @@ class PartidaRepo {
     }
 
     public function search(){
-        return Partida::where('usuarioid', $this->usuario->usuarioid)->orderBy('created_at', 'DESC')->get();
+        $partidaModel = $this->usuario->test_mode == 1 ? ApuestaTest::query() : Partida::query();
+        return $partidaModel->where('usuarioid', $this->usuario->usuarioid)->orderBy('created_at', 'DESC')->get();
     }
 
     public function getEmptyApuesta(){
-        return Partida::where('usuarioid', $this->usuario->usuarioid)->where('estado','0')->first();
+        $result = $this->usuario->test_mode == 1 ? ApuestaTest::query() : Partida::query(); 
+        return $result->where('usuarioid', $this->usuario->usuarioid)->where('estado','0')->first();
     }
 }

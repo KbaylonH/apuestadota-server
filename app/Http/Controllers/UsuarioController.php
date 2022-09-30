@@ -16,7 +16,10 @@ class UsuarioController extends Controller
 
     public function switchSaldo(){
         $usuario = auth()->user();
-        $usuario->update(['balance_switch' => ($usuario->balance_switch == 'balance' ? 'balance_prueba' : 'balance')]);
+        $usuario->update([
+            'balance_switch' => ($usuario->balance_switch == 'balance' ? 'balance_prueba' : 'balance'),
+            'test_mode' => ($usuario->test_mode == 1) ? 0 : 1
+        ]);
         return response()->json(['saldo_switch'=>$usuario->balance_switch]);
     }
 
