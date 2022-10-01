@@ -13,7 +13,7 @@ class BalanceRepo {
     private $usuario;
 
     public function crearDeposito($params){
-        $depositoModel = $this->usuario->test_mode == 1 ? new DepositoTest() : new Deposito();
+        $depositoModel = new Deposito();
         $orden_id = 'DEP_'.strtoupper(Str::random(16));
         $deposito = $depositoModel->fill([
             'usuarioid' => $this->usuario->usuarioid,
@@ -32,16 +32,12 @@ class BalanceRepo {
     }
 
     public function getRetiros(){
-        $retiroModel = $this->usuario->test_mode == 1 ? RetiroTest::query() : Retiro::query();
-        return $retiroModel->where('usuarioid', $this->usuario->usuarioid)->get();
+        $retiroModel = Retiro::query();
+        return $retiroModel->where('usuarioid', $this->usuario->usuarioid)->orderBy('created_at', 'DESC')->get();
     }
 
     public function getDepositoOrden($orden_id){
-        $deposito = Deposito::where('orden_id', $orden_id)->first();
-        if($deposito == null)
-            $deposito = DepositoTest::where('orden_id', $orden_id)->first();
-        
-        return $deposito;
+        return Deposito::where('orden_id', $orden_id)->first();
     }
 
     public function insert($params, $tipo){
@@ -65,16 +61,16 @@ class BalanceRepo {
     }
 
     public function retirar($params){
-        if($this->usuario->{$this->usuario->balance_switch} < $params['monto'])
+        if($this->usuario->balance < $params['monto'])
             throw new \Exception("No cuentas con saldo suficiente para realizar el retiro");
 
-        $retiroModel = $this->usuario->test_mode == 1 ? new RetiroTest() : new Retiro();
+        $retiroModel = new Retiro();
         $params['usuarioid'] = $this->usuario->usuarioid;
         $retiroModel->fill($params);
         $retiroModel->save();
 
-        $this->decrease($params['monto'], $this->usuario->balance_switch);
-        return ['retiro'=>$retiroModel, 'saldo'=>$this->usuario->{$this->usuario->balance_switch}];
+        $this->decrease($params['monto']);
+        return ['retiro'=>$retiroModel, 'saldo'=>$this->usuario->balance];
     }
 
     /*

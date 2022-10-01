@@ -38,5 +38,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::put('profile', 'UsuarioController@update');
 
     Route::get('referidos', 'ReferidoController');
+
+    Route::post('deposito/test', 'BalanceController@depositarTest');
 });
 

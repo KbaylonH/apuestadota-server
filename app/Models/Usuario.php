@@ -28,6 +28,7 @@ class Usuario extends Authenticatable
         'balance',
         'balance_prueba',
         'balance_switch',
+        'test_mode',
         'partida',
         'foto',
         'login_at',

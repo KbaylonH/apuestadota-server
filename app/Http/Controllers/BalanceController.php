@@ -13,6 +13,14 @@ class BalanceController extends Controller {
         $this->repo = $repo;
     }
 
+    public function depositarTest(){
+        $user = auth()->user();
+        $user->balance_prueba += 100;
+        $user->save();
+
+        return response()->json(['success'=>true, 'saldo'=>$user->balance_prueba]);
+    }
+
     public function getRetiros(){
         $user = auth()->user();
         $this->repo->setUsuario($user);

@@ -26,13 +26,12 @@ class DepositarAction {
                     break;
             }
         } catch (\Exception $e) {
-            return redirect()->route('payment.error', ['error'=>$e->getMessage()]);
+            return redirect()->away(config('app.url_payment_error') . '?error=' . urlencode($e->getMessage()));
         }
     }
 
     private function checkDeposito($usuario){
-        $depositoModel = $usuario->test_mode == 1 ? DepositoTest::query() : Deposito::query();
-        $exists = $depositoModel->here('usuarioid', $usuario->usuarioid)->whereIn('estado', [1,3])->first();
+        $exists = Deposito::where('usuarioid', $usuario->usuarioid)->whereIn('estado', [1,3])->first();
         if($exists !== null)
             throw new \Exception("Lo sentimos, solo se admite el código de referido en la primera recarga");
     }

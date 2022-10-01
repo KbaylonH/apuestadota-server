@@ -7,8 +7,6 @@
 use App\Models\Usuario;
 use App\Models\Deposito;
 use App\Models\Partida;
-use App\Models\Test\ApuestaTest;
-use App\Models\Test\DepositoTest;
 use App\Repos\BalanceRepo;
 use App\Repos\PartidaRepo;
 use Illuminate\Http\Request;
@@ -30,11 +28,12 @@ class ApostarAction {
             throw new \Exception("No cuenta con saldo disponible para realizar la apuesta");
 
         // Si el usuario realizó 19 apuestas durante el mes, para esta apuesta el multiplicador de apuesta es 2
-        if( $this->validoBono20Partidas($usuario) )
+        if( $usuario->test_mode == 0 && $this->validoBono20Partidas($usuario) )
             $multiplicador = 2;
 
         // Si el usuario ha realizado 10 partidas y su primer deposito adjuntó un codigo de referido, se añade a su saldo un 10% del deposito
-        $this->entregarBonoDepositoReferido($usuario);
+        if($usuario->test_mode == 0)
+            $this->entregarBonoDepositoReferido($usuario);
 
         $partida = $repo->create($monto, $multiplicador, [
             'ip_address' => $req->ip(),
@@ -54,15 +53,8 @@ class ApostarAction {
      * Esta funcion detecta si el usuario hizo una recarga con codigo de referido, se le debe otorgar un 10% de ese deposito despues de 10 partidas
      */
     private function entregarBonoDepositoReferido($usuario){
-        $depositoModel = null;
-        $apuestaModel = null;
-        if($usuario->test_mode == 1){
-            $depositoModel = DepositoTest::query();
-            $apuestaModel = ApuestaTest::query();
-        } else {
-            $depositoModel = Deposito::query();
-            $apuestaModel = Partida::query();
-        }
+        $depositoModel = Deposito::query();
+        $apuestaModel = Partida::query();
 
         $deposito = $depositoModel->where('usuarioid', $usuario->id)->where(function($query){
             $query->whereNotNull('ref_code')->orWhere('ref_code','!=','');
@@ -80,16 +72,8 @@ class ApostarAction {
      * Esta funcion valida si el usuario hizo un deposito y despues de ello jugó 19 apuestas, la apuesta nro 20 del mes se duplica
      */
     private function validoBono20Partidas($usuario){
-        $depositoModel = null;
-        $apuestaModel = null;
-        if($usuario->test_mode == 1){
-            $depositoModel = DepositoTest::query();
-            $apuestaModel = ApuestaTest::query();
-        } else {
-            $depositoModel = Deposito::query();
-            $apuestaModel = Partida::query();
-        }
-
+        $depositoModel = Deposito::query();
+        $apuestaModel = Partida::query();
         $anio_actual = date('Y');
         $mes_actual = date('m');
         

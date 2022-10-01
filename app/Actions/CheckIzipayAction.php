@@ -29,14 +29,14 @@ class CheckIzipayAction {
             $deposito->tarjeta_numero = $formAnswer['transactions'][0]['transactionDetails']['paymentMethodDetails']['id'];
             $deposito->save();
             $balanceRepo->setUsuario($user);
-            $balanceRepo->increase($deposito->monto, $user->balance_switch);
+            $balanceRepo->increase($deposito->monto);
             
             if($deposito->ref_code !== null && $deposito->ref_code !== '')
                 (new EntregarBonoReferidoAction)->execute($deposito);
 
-            return redirect()->route('payment.success');
+            return redirect()->away(config('app.url_payment_success'));
         } else {
-            return redirect()->route('payment.error')->withErrors(['error'=>'Hubo un error al momento de realizar el pago. No se debito de tu tarjeta']);
+            return redirect()->away(config('app.url_payment_error') . '?error=' . urlencode('Hubo un error al momento de realizar el pago. No se debito de tu tarjeta'));
         }
     }
 }

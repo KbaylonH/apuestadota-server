@@ -54,6 +54,9 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'url_payment_success' => env('URL_PAYMENT_SUCCESS', 'https://apuestadota.com/paymentSuccess'),
+    'url_payment_error' => env('URL_PAYMENT_ERROR', 'https://apuestadota.com/paymentError'),
+
     'asset_url' => env('ASSET_URL', null),
 
     /*

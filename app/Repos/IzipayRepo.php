@@ -27,7 +27,7 @@ class IzipayRepo {
       return $this->client;
     }
 
-    public function getToken($deposito, Usuario $user){
+    public function getToken(Deposito $deposito, Usuario $user){
         $finalAmount = $deposito->monto * 100;  
         $store = array("amount" => $finalAmount, 
         "currency" => "PEN", 
