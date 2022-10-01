@@ -3,6 +3,9 @@
 use App\Models\Usuario;
 use App\Models\Transaccion;
 use App\Models\Deposito;
+use App\Models\Retiro;
+use App\Models\Test\DepositoTest;
+use App\Models\Test\RetiroTest;
 use Illuminate\Support\Str;
 
 class BalanceRepo {
@@ -10,27 +13,35 @@ class BalanceRepo {
     private $usuario;
 
     public function crearDeposito($params){
+        $depositoModel = $this->usuario->test_mode == 1 ? new DepositoTest() : new Deposito();
         $orden_id = 'DEP_'.strtoupper(Str::random(16));
-        return Deposito::create([
-            'usuarioid' => $params['usuarioid'],
+        $deposito = $depositoModel->fill([
+            'usuarioid' => $this->usuario->usuarioid,
             'monto' => $params['monto'],
             'ref_code' => $params['ref_code'],
             'estado' => 0,
             'proveedor' => $params['proveedor'],
             'orden_id' => $orden_id,
         ]);
+        $deposito->save();
+        return $deposito;
     }
 
     public function setUsuario(Usuario $user){
         $this->usuario = $user;
     }
 
-    public function getAll(){
-        return Transaccion::where('usuarioid', $this->usuario->usuarioid)->get();
+    public function getRetiros(){
+        $retiroModel = $this->usuario->test_mode == 1 ? RetiroTest::query() : Retiro::query();
+        return $retiroModel->where('usuarioid', $this->usuario->usuarioid)->get();
     }
 
     public function getDepositoOrden($orden_id){
-        return Deposito::where('orden_id', $orden_id)->first();
+        $deposito = Deposito::where('orden_id', $orden_id)->first();
+        if($deposito == null)
+            $deposito = DepositoTest::where('orden_id', $orden_id)->first();
+        
+        return $deposito;
     }
 
     public function insert($params, $tipo){
@@ -54,9 +65,16 @@ class BalanceRepo {
     }
 
     public function retirar($params){
-        $transaccion = $this->insert($params, 'retiro');
-        $this->decrease($params['monto']);
-        return ['transaccion'=>$transaccion, 'saldo'=>$this->usuario->balance];
+        if($this->usuario->{$this->usuario->balance_switch} < $params['monto'])
+            throw new \Exception("No cuentas con saldo suficiente para realizar el retiro");
+
+        $retiroModel = $this->usuario->test_mode == 1 ? new RetiroTest() : new Retiro();
+        $params['usuarioid'] = $this->usuario->usuarioid;
+        $retiroModel->fill($params);
+        $retiroModel->save();
+
+        $this->decrease($params['monto'], $this->usuario->balance_switch);
+        return ['retiro'=>$retiroModel, 'saldo'=>$this->usuario->{$this->usuario->balance_switch}];
     }
 
     /*

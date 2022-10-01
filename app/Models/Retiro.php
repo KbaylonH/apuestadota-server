@@ -7,10 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Retiro extends Model
 {
     protected $table = "retiro";
-    protected $primaryKey = "retiroid";
-    protected $fillable = ['transaccionid'];
-
-    public function transaccion(){
-        return $this->belongsTo(Transaccion::class);
-    }
+    protected $fillable = ['usuarioid','nombre','metodo','monto','estado','nro_cuenta','nro_cuenta_inter'];
 }

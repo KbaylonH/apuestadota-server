@@ -1,6 +1,7 @@
 <?php namespace App\Repos;
 
 use App\Models\Deposito;
+use App\Models\Test\DepositoTest;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Log;
 use Lyra\Client;
@@ -26,7 +27,7 @@ class IzipayRepo {
       return $this->client;
     }
 
-    public function getToken(Deposito $deposito, Usuario $user){
+    public function getToken($deposito, Usuario $user){
         $finalAmount = $deposito->monto * 100;  
         $store = array("amount" => $finalAmount, 
         "currency" => "PEN", 

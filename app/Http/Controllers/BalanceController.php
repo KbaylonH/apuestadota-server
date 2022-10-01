@@ -13,11 +13,11 @@ class BalanceController extends Controller {
         $this->repo = $repo;
     }
 
-    public function getAll(){
+    public function getRetiros(){
         $user = auth()->user();
         $this->repo->setUsuario($user);
 
-        return response()->json( $this->repo->getAll() );
+        return response()->json( $this->repo->getRetiros() );
     }
 
     public function depositar(Request $request){
@@ -35,13 +35,10 @@ class BalanceController extends Controller {
 
         try {
 
-            $params = $request->only('metodo', 'monto');
+            $params = $request->only('metodo', 'nombre', 'monto', 'nro_cuenta', 'nro_cuenta_inter');
             $this->repo->setUsuario(auth()->user());
-
             $rpta = $this->repo->retirar($params);
-
             return response()->json( $rpta );
-
         } catch (\Exception $e) {
             \Log::error($e);
             return response()->json(['error'=>$e->getMessage()], 400);

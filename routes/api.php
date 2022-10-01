@@ -25,8 +25,8 @@ Route::group(['middleware'=>'auth:api'], function(){
 
     Route::post('depositar', 'BalanceController@depositar');
 
-    Route::post('retirar', 'BalanceController@retirar');
-    Route::get('transacciones', 'BalanceController@getAll');
+    Route::post('retiros', 'BalanceController@retirar');
+    Route::get('retiros', 'BalanceController@getRetiros');
 
     Route::post('bet', 'PartidaController@apostar');
 
