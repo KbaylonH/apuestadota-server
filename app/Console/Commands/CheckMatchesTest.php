@@ -7,19 +7,20 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 use App\Models\Usuario;
-use App\Models\Partida;
+use App\Models\Test\ApuestaTest;
 use App\Repos\DotaRepo;
 use App\Repos\BalanceRepo;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class CheckMatches extends Command
+class CheckMatchesTest extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'matches:check';
+    protected $signature = 'matches_test:check';
 
     /**
      * The console command description.
@@ -45,8 +46,17 @@ class CheckMatches extends Command
      */
     public function handle()
     {
+        $config = DB::table('0_config')->where('id', 5)->first();
+
+        if($config->valor == 1){
+            Log::info("Ya estan finalizando las apuestas...");
+            return;
+        }
+
+        DB::table('0_config')->where('id', 5)->update(['valor'=>1]);
+
         // Se obtiene los match_ids en estado pendiente
-        $partidas = Partida::where('estado', 0)->groupBy('match_id')->select('match_id')->get();
+        $partidas = ApuestaTest::where('estado', 0)->groupBy('match_id')->select('match_id')->get();
 
         foreach($partidas as $partida){
 
@@ -76,13 +86,13 @@ class CheckMatches extends Command
                         if($user !== null){
 
                             // buscamos su partida (apuesta)
-                            $user_partida = Partida::where('match_id', $partida->match_id)->where('usuarioid', $user->usuarioid)->first();
+                            $user_partida = ApuestaTest::where('match_id', $partida->match_id)->where('usuarioid', $user->usuarioid)->first();
 
                             if($user_partida !== null){
                                 // Aumentar saldo
                                 $balanceRepo = new BalanceRepo();
                                 $balanceRepo->setUsuario($user);
-                                $balanceRepo->increase(($user_partida->monto * $user_partida->multiplicador), 'balance');
+                                $balanceRepo->increase(($user_partida->monto * $user_partida->multiplicador), 'balance_prueba');
                                 
                                 // marcado como ganado
                                 $user_partida->fecha_finalizado = time(); 
@@ -93,12 +103,13 @@ class CheckMatches extends Command
                     }
 
                     // Marcar las apuestas de los otros participantes como perdidas (estado = 2)
-                    Partida::where('match_id', $partida->match_id)->where('estado', '0')->update(['estado'=>'2','fecha_finalizado'=>time()]);
+                    ApuestaTest::where('match_id', $partida->match_id)->where('estado', '0')->update(['estado'=>'2','fecha_finalizado'=>time()]);
                 }
             } catch (\Exception $e) {
                 Log::error($e);
             }            
         }
 
+        DB::table('0_config')->where('id', 5)->update(['valor'=>0]);
     }
 }

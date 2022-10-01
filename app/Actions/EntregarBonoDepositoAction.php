@@ -6,7 +6,7 @@ use App\Repos\BalanceRepo;
 
 class EntregarBonoDepositoAction {
 
-    public function execute(Deposito $deposito){
+    public function execute($deposito){
         $usuario = Usuario::find($deposito->usuarioid);
         $balanceRepo = new BalanceRepo();
         $balanceRepo->setUsuario($usuario);
