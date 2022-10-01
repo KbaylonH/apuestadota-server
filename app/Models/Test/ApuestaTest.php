@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ApuestaTest extends Model
 {
-    protected $table = "partida_prueba";
+    protected $table = "apuesta_prueba";
     protected $primaryKey = "partidaid";
     protected $fillable = [
         'usuarioid','estado','match_id',

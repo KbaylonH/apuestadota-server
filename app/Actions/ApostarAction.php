@@ -56,7 +56,7 @@ class ApostarAction {
     private function entregarBonoDepositoReferido($usuario){
         $depositoModel = null;
         $apuestaModel = null;
-        if($this->usuario->test_mode == 1){
+        if($usuario->test_mode == 1){
             $depositoModel = DepositoTest::query();
             $apuestaModel = ApuestaTest::query();
         } else {
@@ -82,7 +82,7 @@ class ApostarAction {
     private function validoBono20Partidas($usuario){
         $depositoModel = null;
         $apuestaModel = null;
-        if($this->usuario->test_mode == 1){
+        if($usuario->test_mode == 1){
             $depositoModel = DepositoTest::query();
             $apuestaModel = ApuestaTest::query();
         } else {

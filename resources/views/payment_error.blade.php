@@ -95,18 +95,13 @@
                 <a class="anchor-return" href="http://apuestadota.com/play">
                     <p>Volver</p>
                 </a> 
-                <div class="flex-container"> 
+                <div class="flex-container">
+                    @if(!request()->has('error'))
                     <h3> Hubo un problema al realizar el pago, intenta más tarde. No se realizaron cobros en tu tarjeta de crédito/débito</h3>
+                    @else
+                    <h3> {{ request()->input('error') }}</h3>
+                    @endif
                 </div>
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
             </div>
     </div>
 </body>   

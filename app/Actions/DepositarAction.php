@@ -25,7 +25,7 @@ class DepositarAction {
                     break;
             }
         } catch (\Exception $e) {
-            return redirect()->route('payment.error')->withErrors(['error'=>$e->getMessage()]);
+            return redirect()->route('payment.error', ['error'=>$e->getMessage()]);
         }
     }
 
