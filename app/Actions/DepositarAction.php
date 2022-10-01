@@ -13,7 +13,7 @@ class DepositarAction {
             $balanceRepo = new BalanceRepo();
     
             if(isset($params['ref_code']) && $params['ref_code'] !== ''){
-                $this->checkDeposito($usuario);
+                $this->checkDeposito($usuario, $params['ref_code']);
             }
             
             $balanceRepo->setUsuario($usuario);
@@ -30,10 +30,15 @@ class DepositarAction {
         }
     }
 
-    private function checkDeposito($usuario){
+    private function checkDeposito($usuario, $ref_code){
         $exists = Deposito::where('usuarioid', $usuario->usuarioid)->whereIn('estado', [1,3])->first();
         if($exists !== null)
             throw new \Exception("Lo sentimos, solo se admite el código de referido en la primera recarga");
+        else {
+            $exists = Usuario::where('ref_code', $ref_code)->first();
+            if($exists == null)
+                throw new \Exception("El código de referido ingresado no es válido");
+        }
     }
 
 }
