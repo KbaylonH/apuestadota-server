@@ -14,11 +14,14 @@ class UsuarioController extends Controller
         return response()->json(['saldo'=>number_format($usuario->balance, 2), 'saldo_prueba'=>number_format($usuario->balance_prueba, 2), 'saldo_switch'=>$usuario->balance_switch]);
     }
 
-    public function switchSaldo(){
+    public function switchSaldo(Request $req){
         $usuario = auth()->user();
+        $switch = $req->input('switch');
+        $test_mode = $switch;
+        $balance_switch = $switch == 0 ? 'balance' : 'balance_prueba';
         $usuario->update([
-            'balance_switch' => ($usuario->balance_switch == 'balance' ? 'balance_prueba' : 'balance'),
-            'test_mode' => ($usuario->test_mode == 1) ? 0 : 1
+            'balance_switch' => $balance_switch,
+            'test_mode' => $test_mode
         ]);
         return response()->json(['saldo_switch'=>$usuario->balance_switch]);
     }
