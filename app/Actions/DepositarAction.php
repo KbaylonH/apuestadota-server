@@ -11,7 +11,11 @@ class DepositarAction {
     public function execute($params, Usuario $usuario){
         try {
             $balanceRepo = new BalanceRepo();
-    
+            
+            if(isset($params['monto']) && $params['monto'] < 1){
+                throw new \Exception("El monto debe ser mayor a 0");
+            }
+
             if(isset($params['ref_code']) && $params['ref_code'] !== ''){
                 $this->checkDeposito($usuario, $params['ref_code']);
             }

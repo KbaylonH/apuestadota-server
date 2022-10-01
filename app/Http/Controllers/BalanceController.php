@@ -42,7 +42,7 @@ class BalanceController extends Controller {
     public function retirar(Request $request){
         try {
             $params = $request->only('metodo', 'nombre', 'monto', 'nro_cuenta', 'nro_cuenta_inter');
-            if($params['monto'] < 0)
+            if($params['monto'] < 1)
                 throw new \Exception("El monto debe ser mayor a 0");
 
             $this->repo->setUsuario(auth()->user());
