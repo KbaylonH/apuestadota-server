@@ -15,6 +15,9 @@ class BalanceController extends Controller {
 
     public function depositarTest(){
         $user = auth()->user();
+        if($user->balance_prueba + 100 > 10000)
+            return response()->json(['error'=>'El tope de saldo es de $10,000'], 400);
+
         $user->balance_prueba += 100;
         $user->save();
 
