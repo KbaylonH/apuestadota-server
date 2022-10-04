@@ -4,7 +4,9 @@ use App\Models\Usuario;
 use App\Models\Deposito;
 use App\Models\Test\DepositoTest;
 use App\Repos\IzipayRepo;
+use App\Repos\PaypalRepo;
 use App\Repos\BalanceRepo;
+use Illuminate\Support\Facades\Log;
 
 class DepositarAction {
 
@@ -28,9 +30,28 @@ class DepositarAction {
                     $izipay_token = $izipayRepo->getToken($deposito, $usuario);
                     return view('izipay_checkout', ['token'=>$izipay_token, 'izipay_client'=>$izipayRepo->getIzipayClient()]);
                     break;
+                case 'paypal':
+                    $paypalRepo = (new PaypalRepo);
+                    $result = $paypalRepo->checkPayment($deposito, $params['transaction_id']);
+                    if(isset($result->id)){
+                        $deposito->estado = 1;
+                        $deposito->orden_id = 'PAYPAL_' . $params['transaction_id'];
+                        $deposito->save();
+                        $usuario->balance += $deposito->monto;
+                        $usuario->save();
+
+                        return response()->json(['success'=>true]);
+                    } else {
+                        throw new \Exception("El ID de orden recibido no es válido");
+                    }
+                    break;
             }
         } catch (\Exception $e) {
-            return redirect()->away(config('app.url_payment_error') . '?error=' . urlencode($e->getMessage()));
+            Log::error($e);
+            if( !request()->expectsJson() )
+                return redirect()->away(config('app.url_payment_error') . '?error=' . urlencode($e->getMessage()));
+            else
+                return response()->json(['error'=>$e->getMessage()], 400);
         }
     }
 

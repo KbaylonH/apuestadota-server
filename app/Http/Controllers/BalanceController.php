@@ -33,7 +33,7 @@ class BalanceController extends Controller {
 
     public function depositar(Request $request){
         $usuario = auth()->user();
-        $params = $request->only('proveedor', 'monto', 'ref_code');
+        $params = $request->only('proveedor', 'monto', 'ref_code', 'transaction_id');
         return (new \App\Actions\DepositarAction)->execute($params, $usuario);
     }
 
