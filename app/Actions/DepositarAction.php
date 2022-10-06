@@ -41,6 +41,10 @@ class DepositarAction {
                         $usuario->balance += $deposito->monto;
                         $usuario->save();
 
+                        if($deposito->ref_code !== '' && $deposito->ref_code !== null){
+                            (new EntregarBonoReferidoAction)->execute($deposito);
+                        }
+
                         return response()->json(['success'=>true]);
                     } else {
                         throw new \Exception("El ID de orden recibido no es válido");
