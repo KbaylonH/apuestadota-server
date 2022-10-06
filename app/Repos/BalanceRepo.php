@@ -6,6 +6,7 @@ use App\Models\Deposito;
 use App\Models\Retiro;
 use App\Models\Test\DepositoTest;
 use App\Models\Test\RetiroTest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class BalanceRepo {
@@ -29,6 +30,19 @@ class BalanceRepo {
 
     public function setUsuario(Usuario $user){
         $this->usuario = $user;
+    }
+
+    public function getResumen(){
+        $sql = "
+        SELECT * FROM (
+            SELECT UNIX_TIMESTAMP(created_at) AS 'fecha', monto, concepto FROM deposito WHERE usuarioid = ? AND estado IN (1,3)
+            UNION
+            SELECT UNIX_TIMESTAMP(created_at) AS 'fecha', monto * -1, 'RETIRO' AS 'concepto' FROM retiro WHERE usuarioid = ?
+            UNION
+            SELECT UNIX_TIMESTAMP(created_at) AS 'fecha', IF(estado=1,monto,monto*-1) AS 'monto', IF(estado=1,'APUESTA GANADA', 'APUESTA PERDIDA') AS 'concepto' FROM partida WHERE usuarioid = ?
+            ) a ORDER BY fecha DESC
+        ";
+        return DB::select($sql, [$this->usuario->usuarioid, $this->usuario->usuarioid, $this->usuario->usuarioid]);
     }
 
     public function getRetiros(){

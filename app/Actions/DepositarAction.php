@@ -23,6 +23,7 @@ class DepositarAction {
             }
             
             $balanceRepo->setUsuario($usuario);
+            $params['concepto'] = 'DEPÓSITO';
             $deposito = $balanceRepo->crearDeposito($params);
             switch($deposito->proveedor){
                 case 'izipay':

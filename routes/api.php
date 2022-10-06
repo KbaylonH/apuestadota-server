@@ -40,5 +40,6 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::get('referidos', 'ReferidoController');
 
     Route::post('deposito/test', 'BalanceController@depositarTest');
+    Route::get('balance/resumen', 'BalanceController@getResumen');
 });
 

@@ -24,6 +24,12 @@ class BalanceController extends Controller {
         return response()->json(['success'=>true, 'saldo'=>$user->balance_prueba]);
     }
 
+    public function getResumen(){
+        $user = auth()->user();
+        $this->repo->setUsuario($user);
+        return response()->json($this->repo->getResumen());
+    }
+
     public function getRetiros(){
         $user = auth()->user();
         $this->repo->setUsuario($user);
