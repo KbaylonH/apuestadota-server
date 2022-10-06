@@ -19,6 +19,7 @@ class BalanceRepo {
         $deposito = $depositoModel->fill([
             'usuarioid' => $this->usuario->usuarioid,
             'monto' => $params['monto'],
+            'concepto' => $params['concepto'],
             'ref_code' => $params['ref_code'],
             'estado' => isset($params['estado']) ? $params['estado'] : 0,
             'proveedor' => $params['proveedor'],
