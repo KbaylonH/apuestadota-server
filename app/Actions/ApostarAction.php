@@ -31,10 +31,6 @@ class ApostarAction {
         if( $usuario->test_mode == 0 && $this->validoBono20Partidas($usuario) )
             $multiplicador = 2;
 
-        // Si el usuario ha realizado 10 partidas y su primer deposito adjuntó un codigo de referido, se añade a su saldo un 10% del deposito
-        if($usuario->test_mode == 0)
-            $this->entregarBonoDepositoReferido($usuario);
-
         $partida = $repo->create($monto, $multiplicador, [
             'ip_address' => $req->ip(),
             'isp' => gethostbyaddr($req->ip()),
@@ -47,25 +43,6 @@ class ApostarAction {
         $balanceRepo->decrease($monto, $usuario->balance_switch);
 
         return $partida;
-    }
-
-    /**
-     * Esta funcion detecta si el usuario hizo una recarga con codigo de referido, se le debe otorgar un 10% de ese deposito despues de 10 partidas
-     */
-    private function entregarBonoDepositoReferido($usuario){
-        $depositoModel = Deposito::query();
-        $apuestaModel = Partida::query();
-
-        $deposito = $depositoModel->where('usuarioid', $usuario->id)->where(function($query){
-            $query->whereNotNull('ref_code')->orWhere('ref_code','!=','');
-        })->where('estado', 1)->first();
-
-        if($deposito !== null){
-            $partidas = $apuestaModel->where('usuarioid', $usuario->usuarioid)->whereRaw('DATE(created_at) >= ?', [date('Y-m-d', strtotime($deposito->created_at))])->count();
-            if($partidas >= 10){
-                (new \App\Actions\EntregarBonoDepositoAction())->execute($deposito);
-            }
-        }
     }
 
     /**

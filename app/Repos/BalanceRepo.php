@@ -36,7 +36,7 @@ class BalanceRepo {
     public function getResumen(){
         $sql = "
         SELECT * FROM (
-            SELECT UNIX_TIMESTAMP(created_at) AS 'fecha', monto, concepto FROM deposito WHERE usuarioid = ? AND estado IN (1,3)
+            SELECT UNIX_TIMESTAMP(created_at) AS 'fecha', monto, concepto FROM deposito WHERE usuarioid = ? AND estado > 0
             UNION
             SELECT UNIX_TIMESTAMP(created_at) AS 'fecha', monto * -1, 'RETIRO' AS 'concepto' FROM retiro WHERE usuarioid = ?
             UNION
