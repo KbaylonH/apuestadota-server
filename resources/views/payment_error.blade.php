@@ -92,7 +92,7 @@
 <body>
     <div class='home-background'>
             <div class='text'>
-                <a class="anchor-return" href="http://apuestadota.com/play">
+                <a class="anchor-return" href="http://apuestadota.com/start">
                     <p>Volver</p>
                 </a> 
                 <div class="flex-container">

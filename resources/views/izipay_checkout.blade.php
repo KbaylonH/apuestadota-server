@@ -215,7 +215,7 @@
 <body>
     <div class='home-background'>
         <div class="return">
-            <a href='http://apuestadota.com/play' class='checkout-return'>
+            <a href='http://apuestadota.com/start' class='checkout-return'>
                 <img src='/images/chevron-left.png' alt='return' />
                 <p>Volver</p>
             </a>

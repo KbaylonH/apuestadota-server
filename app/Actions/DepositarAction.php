@@ -14,6 +14,9 @@ class DepositarAction {
         try {
             $balanceRepo = new BalanceRepo();
             
+            if(!isset($params['monto']) || (isset($params['monto']) && $params['monto'] == ''))
+                throw new \Exception("Falta indicar el monto");
+
             if(isset($params['monto']) && $params['monto'] < 1){
                 throw new \Exception("El monto debe ser mayor a 0");
             }
