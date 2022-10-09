@@ -7,6 +7,7 @@ use App\Models\Retiro;
 use App\Models\Test\DepositoTest;
 use App\Models\Test\RetiroTest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class BalanceRepo {
@@ -21,6 +22,7 @@ class BalanceRepo {
             'monto' => $params['monto'],
             'concepto' => $params['concepto'],
             'ref_code' => $params['ref_code'],
+            'tipo' => isset($params['tipo']) ? $params['tipo'] : 1,
             'estado' => isset($params['estado']) ? $params['estado'] : 0,
             'proveedor' => $params['proveedor'],
             'orden_id' => $orden_id,
@@ -76,7 +78,7 @@ class BalanceRepo {
     }
 
     public function retirar($params){
-        if($this->usuario->balance < $params['monto'])
+        if($this->usuario->balance_disp < $params['monto'])
             throw new \Exception("No cuentas con saldo suficiente para realizar el retiro");
 
         $retiroModel = new Retiro();
@@ -85,25 +87,40 @@ class BalanceRepo {
         $retiroModel->save();
 
         $this->decrease($params['monto']);
+        $this->decreaseDisponible($params['monto']);
         return ['retiro'=>$retiroModel, 'saldo'=>$this->usuario->balance];
     }
 
     /*
-    @param $monto decimal monto a descontar del saldo
-    @param $field campo donde se hara el descuento, por defecto es 'balance'
+    @param $monto float monto a descontar del saldo
+    @param $field string Campo donde se hara el descuento, por defecto es 'balance'
     */
     public function decrease($monto, $field = 'balance'){
         $this->usuario->{$field} = $this->usuario->{$field} - $monto;
         $this->usuario->save();
     }
 
+    /**
+     * @param $monto float Monto a descontar del saldo disponible
+     */
+    public function decreaseDisponible($monto){
+        $this->decrease($monto, 'balance_disp');
+    }
+
     /*
-    @param $monto decimal monto a añadir al saldo
-    @param $field campo donde se hara el incremento del saldo, por defecto es 'balance'
+    @param $monto float Monto a añadir al saldo
+    @param $field string Campo donde se hara el incremento del saldo, por defecto es 'balance'
     */
     public function increase($monto, $field = 'balance'){
         $this->usuario->{$field} = $this->usuario->{$field} + $monto;
         $this->usuario->save();
+    }
+
+    /**
+     * @param $monto float Monto a añadir al saldo disponible
+     */
+    public function increaseDisponible($monto){
+        $this->increase($monto, 'balance_disp');
     }
 
 }

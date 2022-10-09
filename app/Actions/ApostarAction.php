@@ -10,6 +10,7 @@ use App\Models\Partida;
 use App\Repos\BalanceRepo;
 use App\Repos\PartidaRepo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ApostarAction {
 
@@ -41,8 +42,28 @@ class ApostarAction {
         $balanceRepo =  (new BalanceRepo);
         $balanceRepo->setUsuario($usuario);
         $balanceRepo->decrease($monto, $usuario->balance_switch);
-
+        if($usuario->test_mode == 0){
+            $balanceRepo->decreaseDisponible($monto);
+            $this->entregarBonoAdicional($usuario);
+        }
         return $partida;
+    }
+
+        /**
+     * Esta funcion detecta si hay un deposito retenido por recarga con codigo de referido, de cumplirse la condicion de mas de 10 partidas realizadas, se libera el deposito
+     */
+    private function entregarBonoAdicional($usuario){
+        $deposito = Deposito::where('usuarioid', $usuario->usuarioid)->where('estado', 2)->where('tipo', 3)->first();
+
+        if($deposito !== null){
+            $partidas = Partida::where('usuarioid', $usuario->usuarioid)->whereRaw('DATE(created_at) >= ?', [date('Y-m-d', strtotime($deposito->created_at))])->count();
+            Log::info("nro partidas: " . $partidas);
+            if($partidas >= 1){
+                (new \App\Actions\EntregarBonoDepositoAction())->execute($deposito);
+            }
+        } else {
+            Log::info("No se halló el deposito");
+        }
     }
 
     /**

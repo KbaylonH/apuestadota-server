@@ -15,11 +15,13 @@ class EntregarBonoReferidoAction {
             'monto' => $monto,
             'concepto' => 'BONO POR REFERIDO',
             'ref_code' => '',
-            'estado' => 4,
-            'proveedor' => '',
+            'tipo' => 2,
+            'estado' => 1,
+            'proveedor' => 'sistema',
             'orden_id' => '',
         ]);
         $balanceRepo->increase($monto);
+        $balanceRepo->increaseDisponible($monto);
         $this->entregarAdicional($deposito);
     }
 
@@ -32,8 +34,9 @@ class EntregarBonoReferidoAction {
             'monto' => $monto,
             'concepto' => 'BONO 10%',
             'ref_code' => '',
-            'estado' => 4,
-            'proveedor' => '',
+            'tipo' => 3,
+            'estado' => 2, // Retenido
+            'proveedor' => 'sistema',
             'orden_id' => '',
         ]);
         $balanceRepo->increase($monto);

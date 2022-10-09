@@ -25,9 +25,10 @@ class Usuario extends Authenticatable
         'steamid64',
         'email',
         'telefono',
-        'balance',
+        'balance', // Saldo contable
         'balance_prueba',
         'balance_switch',
+        'balance_disp', // Saldo disponible
         'test_mode',
         'partida',
         'foto',

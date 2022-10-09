@@ -1,5 +1,7 @@
 <?php namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
+use App\Http\Requests\DepositarRequest;
 use Illuminate\Http\Request;
 
 use App\Repos\BalanceRepo;
@@ -17,10 +19,8 @@ class BalanceController extends Controller {
         $user = auth()->user();
         if($user->balance_prueba + 100 > 10000)
             return response()->json(['error'=>'El tope de saldo es de $10,000'], 400);
-
-        $user->balance_prueba += 100;
-        $user->save();
-
+        $this->repo->setUsuario($user);
+        $this->repo->increase(100, 'balance_prueba');
         return response()->json(['success'=>true, 'saldo'=>$user->balance_prueba]);
     }
 
@@ -37,9 +37,9 @@ class BalanceController extends Controller {
         return response()->json( $this->repo->getRetiros() );
     }
 
-    public function depositar(Request $request){
+    public function depositar(DepositarRequest $request){
         $usuario = auth()->user();
-        $params = $request->only('proveedor', 'monto', 'ref_code', 'transaction_id');
+        $params = $request->validated();
         return (new \App\Actions\DepositarAction)->execute($params, $usuario);
     }
 
@@ -58,7 +58,7 @@ class BalanceController extends Controller {
             $rpta = $this->repo->retirar($params);
             return response()->json( $rpta );
         } catch (\Exception $e) {
-            \Log::error($e);
+            Log::error($e);
             return response()->json(['error'=>$e->getMessage()], 400);
         }
 

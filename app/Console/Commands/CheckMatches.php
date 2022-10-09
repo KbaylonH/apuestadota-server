@@ -80,9 +80,11 @@ class CheckMatches extends Command
 
                             if($user_partida !== null){
                                 // Aumentar saldo
+                                $monto_ganado = $user_partida->monto * $user_partida->multiplicador;
                                 $balanceRepo = new BalanceRepo();
                                 $balanceRepo->setUsuario($user);
-                                $balanceRepo->increase(($user_partida->monto * $user_partida->multiplicador), 'balance');
+                                $balanceRepo->increase($monto_ganado, 'balance');
+                                $balanceRepo->increaseDisponible($monto_ganado);
                                 
                                 // marcado como ganado
                                 $user_partida->fecha_finalizado = time(); 

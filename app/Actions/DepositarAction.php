@@ -10,48 +10,27 @@ use Illuminate\Support\Facades\Log;
 
 class DepositarAction {
 
+    public $balanceRepo;
+
+    public function __construct()
+    {
+        $this->balanceRepo = new BalanceRepo();
+    }
+
     public function execute($params, Usuario $usuario){
         try {
-            $balanceRepo = new BalanceRepo();
-            
-            if(!isset($params['monto']) || (isset($params['monto']) && $params['monto'] == ''))
-                throw new \Exception("Falta indicar el monto");
-
-            if(isset($params['monto']) && $params['monto'] < 10){
-                throw new \Exception("El monto a depositar como mínimo es de $10");
-            }
-
-            if(isset($params['ref_code']) && $params['ref_code'] !== ''){
+            if(isset($params['ref_code']) && $params['ref_code'] !== null &&$params['ref_code'] !== ''){
                 $this->checkDeposito($usuario, $params['ref_code']);
             }
-            
-            $balanceRepo->setUsuario($usuario);
+            $this->balanceRepo->setUsuario($usuario);
             $params['concepto'] = 'DEPÓSITO';
-            $deposito = $balanceRepo->crearDeposito($params);
+            $deposito = $this->balanceRepo->crearDeposito($params);
             switch($deposito->proveedor){
                 case 'izipay':
-                    $izipayRepo = (new IzipayRepo);
-                    $izipay_token = $izipayRepo->getToken($deposito, $usuario);
-                    return view('izipay_checkout', ['token'=>$izipay_token, 'izipay_client'=>$izipayRepo->getIzipayClient()]);
+                    return $this->depositarIzipay($deposito, $usuario);
                     break;
                 case 'paypal':
-                    $paypalRepo = (new PaypalRepo);
-                    $result = $paypalRepo->checkPayment($deposito, $params['transaction_id']);
-                    if(isset($result->id)){
-                        $deposito->estado = 1;
-                        $deposito->orden_id = 'PAYPAL_' . $params['transaction_id'];
-                        $deposito->save();
-                        $usuario->balance += $deposito->monto;
-                        $usuario->save();
-
-                        if($deposito->ref_code !== '' && $deposito->ref_code !== null){
-                            (new EntregarBonoReferidoAction)->execute($deposito);
-                        }
-
-                        return response()->json(['success'=>true]);
-                    } else {
-                        throw new \Exception("El ID de orden recibido no es válido");
-                    }
+                    return $this->depositarPaypal($deposito, $params);
                     break;
             }
         } catch (\Exception $e) {
@@ -73,6 +52,32 @@ class DepositarAction {
             $exists = Usuario::where('ref_code', $ref_code)->first();
             if($exists == null)
                 throw new \Exception("El código de referido ingresado no es válido");
+        }
+    }
+
+    private function depositarIzipay(Deposito $deposito, Usuario $usuario){
+        $izipayRepo = (new IzipayRepo);
+        $izipay_token = $izipayRepo->getToken($deposito, $usuario);
+        return view('izipay_checkout', ['token'=>$izipay_token, 'izipay_client'=>$izipayRepo->getIzipayClient()]);
+    }
+
+    private function depositarPaypal(Deposito $deposito, $params){
+        $paypalRepo = (new PaypalRepo);
+        $result = $paypalRepo->checkPayment($deposito, $params['transaction_id']);
+        if(isset($result->id)){
+            $deposito->estado = 1;
+            $deposito->orden_id = 'PAYPAL_' . $params['transaction_id'];
+            $deposito->save();
+
+            $this->balanceRepo->increase($deposito->monto);
+            $this->balanceRepo->increaseDisponible($deposito->monto);
+
+            if($deposito->ref_code !== '' && $deposito->ref_code !== null)
+                (new EntregarBonoReferidoAction)->execute($deposito);
+            
+            return response()->json(['success'=>true]);
+        } else {
+            throw new \Exception("El ID de orden recibido no es válido");
         }
     }
 

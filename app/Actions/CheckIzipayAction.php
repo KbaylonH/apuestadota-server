@@ -30,6 +30,7 @@ class CheckIzipayAction {
             $deposito->save();
             $balanceRepo->setUsuario($user);
             $balanceRepo->increase($deposito->monto);
+            $balanceRepo->increaseDisponible($deposito->monto);
             
             if($deposito->ref_code !== null && $deposito->ref_code !== '')
                 (new EntregarBonoReferidoAction)->execute($deposito);
