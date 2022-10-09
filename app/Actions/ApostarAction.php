@@ -58,7 +58,7 @@ class ApostarAction {
         if($deposito !== null){
             $partidas = Partida::where('usuarioid', $usuario->usuarioid)->whereRaw('DATE(created_at) >= ?', [date('Y-m-d', strtotime($deposito->created_at))])->count();
             Log::info("nro partidas: " . $partidas);
-            if($partidas >= 1){
+            if($partidas >= 10){
                 (new \App\Actions\EntregarBonoDepositoAction())->execute($deposito);
             }
         } else {
