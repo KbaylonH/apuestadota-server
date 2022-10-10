@@ -6,6 +6,7 @@ class DotaRepo {
 
     private $steamID;
     private $curl;
+    private $api_key = "84b24242-4fe0-46ac-87a7-efca3ff28117";
 
     public function __construct($steamID = null)
     {
@@ -16,7 +17,7 @@ class DotaRepo {
     }
 
     public function findMatch($matchID){
-        $this->curl->get("matches/".$matchID);
+        $this->curl->get("matches/".$matchID."?api_key=".$this->api_key);
         return $this->curl->response;
     }
 
@@ -25,7 +26,7 @@ class DotaRepo {
     }
 
     public function getRecentMatches(){
-        $this->curl->get("players/".$this->steamID."/recentMatches");
+        $this->curl->get("players/".$this->steamID."/recentMatches?api_key=".$this->api_key);
         return $this->curl->response;
     }
 
