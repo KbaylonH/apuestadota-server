@@ -55,4 +55,10 @@ class SteamRepo {
         return $response['response']['players'][0];
     }
 
+    public function hasPublicAccess($steamID){
+        $response = file_get_contents('https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/v1/?key='.$this->api_key.'&account_id='.$steamID);
+        $response = json_decode($response,true);
+        return $response['result']['status'] == 1;
+    }
+
 }

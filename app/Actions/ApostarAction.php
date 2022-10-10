@@ -9,12 +9,17 @@ use App\Models\Deposito;
 use App\Models\Apuesta;
 use App\Repos\BalanceRepo;
 use App\Repos\ApuestaRepo;
+use App\Repos\SteamRepo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class ApostarAction {
 
     public function execute(Usuario $usuario, $params, Request $req){
+
+        if(!$this->hasPublicAccess($usuario))
+            throw new \Exception("No se pudo realizar la apuesta debido a que no habilitaste el acceso público en tu cuenta de Dota 2");
+
         $multiplicador = 1.4;
         $monto = $params['monto'];
 
@@ -76,5 +81,10 @@ class ApostarAction {
                 return false;
             }
         }
+    }
+
+    private function hasPublicAccess($usuario){
+        $steamRepo = new SteamRepo();
+        return $steamRepo->hasPublicAccess($usuario->steamid);
     }
 }
