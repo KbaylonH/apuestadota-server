@@ -19,7 +19,7 @@ class CreateTransaccionTable extends Migration
             $table->string('metodo')->nullable();
             $table->string('tipo')->nullable();
             $table->decimal('monto', 11, 2);
-            $table->bigInteger('usuarioid');
+            $table->bigInteger('usuario_id');
             $table->timestamps();
         });
     }

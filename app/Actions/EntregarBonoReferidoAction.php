@@ -21,12 +21,11 @@ class EntregarBonoReferidoAction {
             'orden_id' => '',
         ]);
         $balanceRepo->increase($monto);
-        $balanceRepo->increaseDisponible($monto);
         $this->entregarAdicional($deposito);
     }
 
     private function entregarAdicional(Deposito $deposito){
-        $usuario = Usuario::find($deposito->usuarioid);
+        $usuario = $deposito->usuario;
         $monto = $deposito->monto * 0.1;
         $balanceRepo = new BalanceRepo();
         $balanceRepo->setUsuario($usuario);
@@ -35,11 +34,12 @@ class EntregarBonoReferidoAction {
             'concepto' => 'BONO 10%',
             'ref_code' => '',
             'tipo' => 3,
-            'estado' => 2, // Retenido
+            'estado' => 1, // Retenido
             'proveedor' => 'sistema',
             'orden_id' => '',
         ]);
         $balanceRepo->increase($monto);
+        $usuario->disableWithdraw();
     }
 
 }

@@ -14,7 +14,7 @@ class CreateUsuarioTable extends Migration
     public function up()
     {
         Schema::create('usuario', function (Blueprint $table) {
-            $table->bigIncrements('usuarioid');
+            $table->bigIncrements('id');
             $table->string('nickname');
             $table->string('nombre')->nullable();
             $table->string('apellido')->nullable();
@@ -23,7 +23,9 @@ class CreateUsuarioTable extends Migration
             $table->string('email')->nullable();
             $table->string('telefono')->nullable();
             $table->decimal('balance', 11, 2)->nullable();
-            $table->string('partida')->nullable();
+            $table->decimal('balance_prueba', 11, 2)->nullable();
+            $table->integer('test_mode')->default(0);
+            $table->integer('allow_withdraw')->default(1);
             $table->string('foto')->nullable();
             $table->integer('steam_time_created')->nullable();
             $table->string('api_token');

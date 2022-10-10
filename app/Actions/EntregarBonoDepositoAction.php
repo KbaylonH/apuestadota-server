@@ -8,11 +8,9 @@ use Illuminate\Support\Facades\Log;
 class EntregarBonoDepositoAction {
 
     public function execute(Deposito $deposito){
-        $usuario = Usuario::find($deposito->usuarioid);
-        
+        $usuario = $deposito->usuario;
         $balanceRepo = new BalanceRepo();
         $balanceRepo->setUsuario($usuario);
-        $balanceRepo->increaseDisponible($deposito->monto);
         $deposito->update(['estado'=>1]);
     }
 

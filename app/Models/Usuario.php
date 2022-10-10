@@ -12,12 +12,6 @@ class Usuario extends Authenticatable
 
     protected $table = "usuario";
 
-    protected $primaryKey = "usuarioid";
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'nombre',
         'apellido',
@@ -28,9 +22,8 @@ class Usuario extends Authenticatable
         'balance', // Saldo contable
         'balance_prueba',
         'balance_switch',
-        'balance_disp', // Saldo disponible
         'test_mode',
-        'partida',
+        'allow_withdraw',
         'foto',
         'login_at',
         'ref_code',
@@ -39,21 +32,33 @@ class Usuario extends Authenticatable
         'dni_status'
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    protected $hidden = [ 'password', 'remember_token', ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    protected $casts = [ 'email_verified_at' => 'datetime', ];
+
+    public function enableWithdraw(){
+        $this->allow_withdraw = 1;
+        $this->save();
+    }
+
+    public function disableWithdraw(){
+        $this->allow_withdraw = 0;
+        $this->save();
+    }
+
+    public function apuestas_test(){
+        return $this->hasMany(ApuestaTest::class, 'usuario_id', 'id');
+    }    
+
+    public function apuestas(){
+        return $this->hasMany(Apuesta::class, 'usuario_id', 'id');
+    }
+
+    public function depositos(){
+        return $this->hasMany(Deposito::class, 'usuario_id', 'id');
+    }
+
+    public function retiros(){
+        return $this->hasMany(Retiro::class, 'usuario_id', 'id');
+    }
 }

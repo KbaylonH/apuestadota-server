@@ -13,7 +13,7 @@ class UpdatePartida2 extends Migration
      */
     public function up()
     {
-        Schema::table('partida', function (Blueprint $table){
+        Schema::table('apuesta', function (Blueprint $table){
             $table->string('isp')->nullable();
             $table->string('ip_address')->nullable();
             $table->string('pc_name')->nullable();

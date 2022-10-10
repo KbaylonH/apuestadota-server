@@ -51,11 +51,11 @@ class ProcesarApuestasTest extends Command
         } 
 
         // Se obtiene los match_ids en estado pendiente
-        $partidas = ApuestaTest::where('estado', 0)->whereNull('match_id')->get();
+        $apuestas = ApuestaTest::where('estado', 0)->whereNull('match_id')->get();
 
-        Log::info("Nro Partidas a procesar: " . count($partidas));
+        Log::info("Nro Partidas a procesar: " . count($apuestas));
 
-        if(count($partidas) < 1){ 
+        if(count($apuestas) < 1){ 
             Log::info("No hay partidas que procesar...");
             return;
         }
@@ -64,18 +64,18 @@ class ProcesarApuestasTest extends Command
 
         $maxima_espera = DB::table('0_config')->where('id', 3)->first()->valor;
 
-        foreach($partidas as $partida){
+        foreach($apuestas as $apuesta){
 
             try {
 
-                $usuario = Usuario::find($partida->usuarioid);
+                $usuario = $apuesta->usuario;
 
-                Log::info("Usuarioid: " . $usuario->usuarioid);
-                Log::info("timestamp apuesta: " . $partida->created_at);
+                Log::info("ID USUARIO: " . $usuario->id);
+                Log::info("timestamp apuesta: " . $apuesta->created_at);
     
-                if(time() - strtotime($partida->created_at) > $maxima_espera){
-                    $partida->estado = '2';
-                    $partida->save();
+                if(time() - strtotime($apuesta->created_at) > $maxima_espera){
+                    $apuesta->estado = '2';
+                    $apuesta->save();
                     continue;
                 }
                 
@@ -87,8 +87,8 @@ class ProcesarApuestasTest extends Command
                     continue;
                 }
 
-                $filtered_matches = array_filter($matches, function($item) use ($partida, $maxima_espera){
-                    $diff = $item->start_time - strtotime($partida->created_at);
+                $filtered_matches = array_filter($matches, function($item) use ($apuesta, $maxima_espera){
+                    $diff = $item->start_time - strtotime($apuesta->created_at);
                     return $diff > 0 && $diff < $maxima_espera && $item->game_mode == 22 && $item->lobby_type == 7 && $item->party_size == 1;
                 });
         
@@ -98,19 +98,19 @@ class ProcesarApuestasTest extends Command
                     continue;
                 } else {
                     Log::info(json_encode($filtered_matches));
-                    $exists = $this->findMatch($partida->usuarioid, $filtered_matches[0]->match_id);
+                    $exists = $this->findMatch($apuesta->usuario_id, $filtered_matches[0]->match_id);
                     if($exists != null){
                         Log::info("La partida nro " . $filtered_matches[0]->match_id . " ya fue colocado en otra apuesta");
                         continue;
                     }
                 }
         
-                Log::info("Se encontro una partida para la apuesta #" . $partida->partidaid);
-                $partida->match_id = $filtered_matches[0]->match_id;
-                $partida->match_start_time = $filtered_matches[0]->start_time;
-                $partida->match_hero_id = $filtered_matches[0]->hero_id;
-                $partida->fecha_proceso = time();
-                $partida->save();
+                Log::info("Se encontro una partida para la apuesta #" . $apuesta->id);
+                $apuesta->match_id = $filtered_matches[0]->match_id;
+                $apuesta->match_start_time = $filtered_matches[0]->start_time;
+                $apuesta->match_hero_id = $filtered_matches[0]->hero_id;
+                $apuesta->fecha_proceso = time();
+                $apuesta->save();
             } catch (\Exception $e){
                 Log::error($e);
             }
@@ -119,7 +119,7 @@ class ProcesarApuestasTest extends Command
         DB::table('0_config')->where('id', 4)->update(['valor'=>0]);
     }
 
-    private function findMatch($usuarioid, $match_id){
-        return ApuestaTest::where('usuarioid', $usuarioid)->where('match_id', $match_id)->first();
+    private function findMatch($usuario_id, $match_id){
+        return ApuestaTest::where('usuario_id', $usuario_id)->where('match_id', $match_id)->first();
     }
 }

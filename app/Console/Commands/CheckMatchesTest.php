@@ -56,18 +56,18 @@ class CheckMatchesTest extends Command
         DB::table('0_config')->where('id', 5)->update(['valor'=>1]);
 
         // Se obtiene los match_ids en estado pendiente
-        $partidas = ApuestaTest::where('estado', 0)->groupBy('match_id')->select('match_id')->get();
+        $apuestas = ApuestaTest::where('estado', 0)->groupBy('match_id')->select('match_id')->get();
 
-        foreach($partidas as $partida){
+        foreach($apuestas as $apuesta){
 
             try {
                 // Buscamos la partida con el api de dota
-                $match = (new DotaRepo)->findMatch($partida->match_id);
+                $match = (new DotaRepo)->findMatch($apuesta->match_id);
 
                 if($match !== null){
 
                     if(isset($match->error))
-                        throw new \Exception("Hubo un error al obtener la informacion de la partida de dota #" . $partida->match_id. ":" . $match->error);
+                        throw new \Exception("Hubo un error al obtener la informacion de la partida de dota #" . $apuesta->match_id. ":" . $match->error);
 
                     // Obtenemos los jugadores de la partida
                     $players = $match->players;
@@ -86,7 +86,7 @@ class CheckMatchesTest extends Command
                         if($user !== null){
 
                             // buscamos su partida (apuesta)
-                            $user_partida = ApuestaTest::where('match_id', $partida->match_id)->where('usuarioid', $user->usuarioid)->first();
+                            $user_partida = $user->apuestas_test()->where('match_id', $apuesta->match_id)->first();
 
                             if($user_partida !== null){
                                 // Aumentar saldo
@@ -103,7 +103,7 @@ class CheckMatchesTest extends Command
                     }
 
                     // Marcar las apuestas de los otros participantes como perdidas (estado = 2)
-                    ApuestaTest::where('match_id', $partida->match_id)->where('estado', '0')->update(['estado'=>'2','fecha_finalizado'=>time()]);
+                    ApuestaTest::where('match_id', $apuesta->match_id)->where('estado', '0')->update(['estado'=>'2','fecha_finalizado'=>time()]);
                 }
             } catch (\Exception $e) {
                 Log::error($e);

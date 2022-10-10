@@ -6,9 +6,9 @@
 
 use App\Models\Usuario;
 use App\Models\Deposito;
-use App\Models\Partida;
+use App\Models\Apuesta;
 use App\Repos\BalanceRepo;
-use App\Repos\PartidaRepo;
+use App\Repos\ApuestaRepo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -18,7 +18,7 @@ class ApostarAction {
         $multiplicador = 1.4;
         $monto = $params['monto'];
 
-        $repo = new PartidaRepo($usuario);
+        $repo = new ApuestaRepo($usuario);
 
         $emptyApuesta = $repo->getEmptyApuesta();
 
@@ -32,7 +32,7 @@ class ApostarAction {
         if( $usuario->test_mode == 0 && $this->validoBono20Partidas($usuario) )
             $multiplicador = 2;
 
-        $partida = $repo->create($monto, $multiplicador, [
+        $apuesta = $repo->create($monto, $multiplicador, [
             'ip_address' => $req->ip(),
             'isp' => gethostbyaddr($req->ip()),
             'pc_name' => gethostname()
@@ -43,45 +43,31 @@ class ApostarAction {
         $balanceRepo->setUsuario($usuario);
         $balanceRepo->decrease($monto, $usuario->balance_switch);
         if($usuario->test_mode == 0){
-            $balanceRepo->decreaseDisponible($monto);
-            $this->entregarBonoAdicional($usuario);
+            $this->habilitarRetiro($usuario);
         }
-        return $partida;
+        return $apuesta;
     }
 
-        /**
-     * Esta funcion detecta si hay un deposito retenido por recarga con codigo de referido, de cumplirse la condicion de mas de 10 partidas realizadas, se libera el deposito
-     */
-    private function entregarBonoAdicional($usuario){
-        $deposito = Deposito::where('usuarioid', $usuario->usuarioid)->where('estado', 2)->where('tipo', 3)->first();
-
-        if($deposito !== null){
-            $partidas = Partida::where('usuarioid', $usuario->usuarioid)->whereRaw('DATE(created_at) >= ?', [date('Y-m-d', strtotime($deposito->created_at))])->count();
-            Log::info("nro partidas: " . $partidas);
-            if($partidas >= 10){
-                (new \App\Actions\EntregarBonoDepositoAction())->execute($deposito);
-            }
-        } else {
-            Log::info("No se halló el deposito");
-        }
+    private function habilitarRetiro($usuario){
+        $partidas = $usuario->apuestas()->count();
+        if($partidas >= 10 && $usuario->allow_withdraw == 0)
+            $usuario->enableWithdraw();
     }
 
     /**
      * Esta funcion valida si el usuario hizo un deposito y despues de ello jugó 19 apuestas, la apuesta nro 20 del mes se duplica
      */
     private function validoBono20Partidas($usuario){
-        $depositoModel = Deposito::query();
-        $apuestaModel = Partida::query();
         $anio_actual = date('Y');
         $mes_actual = date('m');
         
-        $ultimo_deposito = $depositoModel->where('usuarioid', $usuario->usuarioid)->whereYear('created_at', $anio_actual)->whereMonth('created_at', $mes_actual)->whereIn('estado', [1])->orderBy('created_at', 'DESC')->first(); // Obtiene el ultimo deposito del mes
+        $ultimo_deposito = $usuario->depositos()->whereYear('created_at', $anio_actual)->whereMonth('created_at', $mes_actual)->whereIn('estado', [1])->orderBy('created_at', 'DESC')->first(); // Obtiene el ultimo deposito del mes
 
         if($ultimo_deposito === null){
             return false;
         } else {
             // Obtenemos la cantidad de apuestas realizadas despues del ultimo deposito
-            $partidas = $apuestaModel->where('usuarioid', $usuario->usuarioid)->whereYear('created_at', $anio_actual)->whereMonth('created_at', $mes_actual)->where('created_at', '>', date('Y-m-d', strtotime($ultimo_deposito->created_at)))->count();
+            $partidas = $usuario->apuestas()->whereYear('created_at', $anio_actual)->whereMonth('created_at', $mes_actual)->where('created_at', '>', date('Y-m-d', strtotime($ultimo_deposito->created_at)))->count();
 
             if( $partidas == 19 ){
                 $ultimo_deposito->update(['estado'=>3]);

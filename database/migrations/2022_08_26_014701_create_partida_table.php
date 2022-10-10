@@ -13,9 +13,9 @@ class CreatePartidaTable extends Migration
      */
     public function up()
     {
-        Schema::create('partida', function (Blueprint $table) {
-            $table->bigIncrements('partidaid');
-            $table->bigInteger('usuarioid');
+        Schema::create('apuesta', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->bigInteger('usuario_id');
             $table->decimal('monto', 11, 2)->default(0);
             $table->bigInteger('match_id')->nullable();
             $table->string('estado')->default('0');
@@ -30,6 +30,6 @@ class CreatePartidaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('partida');
+        Schema::dropIfExists('apuesta');
     }
 }

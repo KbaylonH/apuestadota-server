@@ -7,8 +7,8 @@ class ReferidoController extends Controller {
     public function __invoke(){
         $user = auth()->user();
         $depositos = Deposito::with(['usuario'=>function($query){
-            return $query->select('usuarioid', 'nickname', 'foto');
-        }])->where('ref_code', $user->ref_code)->whereIn('estado', [1,3])->orderBy('created_at','desc')->select('usuarioid','ref_code','created_at')->get();
+            return $query->select('id', 'nickname', 'foto');
+        }])->where('ref_code', $user->ref_code)->whereIn('estado', [1,3])->orderBy('created_at','desc')->select('usuario_id','ref_code','created_at')->get();
         return response()->json($depositos);
     }
 

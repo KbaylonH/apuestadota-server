@@ -16,8 +16,6 @@ class LoginController extends Controller
             $steamID64 = $repo->getSteamId64($postParams);
             $steamUser = $repo->getUser($steamID64);
 
-            \Log::info( json_encode($steamUser) );
-
             $usuarioRepo = new UsuarioRepo();
             $userDB = $usuarioRepo->findBySteamId($steamUser['steamid']);
 

@@ -43,7 +43,7 @@ class DepositarAction {
     }
 
     private function checkDeposito($usuario, $ref_code){
-        $exists = Deposito::where('usuarioid', $usuario->usuarioid)->whereIn('estado', [1,3])->first();
+        $exists = $usuario->depositos()->whereIn('estado', [1,3])->first();
         if($exists !== null) {
             throw new \Exception("Lo sentimos, solo se admite el código de referido en la primera recarga");
         } else if( $usuario->ref_code == $ref_code ) {
@@ -70,7 +70,6 @@ class DepositarAction {
             $deposito->save();
 
             $this->balanceRepo->increase($deposito->monto);
-            $this->balanceRepo->increaseDisponible($deposito->monto);
 
             if($deposito->ref_code !== '' && $deposito->ref_code !== null)
                 (new EntregarBonoReferidoAction)->execute($deposito);

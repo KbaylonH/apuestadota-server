@@ -21,7 +21,7 @@ class CheckIzipayAction {
         $orderStatus = $formAnswer['orderStatus'];
 
         $deposito = $balanceRepo->getDepositoOrden($ordenID);
-        $user = Usuario::find($deposito->usuarioid);
+        $user = $deposito->usuario;
 
         if($orderStatus == 'PAID'){
             $deposito->estado = 1;
@@ -30,7 +30,6 @@ class CheckIzipayAction {
             $deposito->save();
             $balanceRepo->setUsuario($user);
             $balanceRepo->increase($deposito->monto);
-            $balanceRepo->increaseDisponible($deposito->monto);
             
             if($deposito->ref_code !== null && $deposito->ref_code !== '')
                 (new EntregarBonoReferidoAction)->execute($deposito);
