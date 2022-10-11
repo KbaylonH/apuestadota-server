@@ -14,6 +14,6 @@ class ApuestaTest extends Model
         'isp', 'ip_address', 'pc_name'];
 
     public function usuario(){
-        return $this->belongsTo(Usuario::class, 'usuario_id', 'id');
+        return $this->belongsTo(\App\Models\Usuario::class, 'usuario_id', 'id');
     }
 }
