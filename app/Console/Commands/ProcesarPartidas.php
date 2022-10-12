@@ -61,7 +61,8 @@ class ProcesarPartidas extends Command
 
         DB::table('0_config')->where('id', 1)->update(['valor'=>1]);
 
-        $maxima_espera = DB::table('0_config')->where('id', 3)->first()->valor;
+        $apuesta_intervalo = DB::table('0_config')->where('id', 8)->value('valor');
+        $maxima_espera = DB::table('0_config')->where('id', 3)->value('valor');
 
         foreach($apuestas as $apuesta){
 
@@ -86,9 +87,9 @@ class ProcesarPartidas extends Command
                     continue;
                 }
 
-                $filtered_matches = array_filter($matches, function($item) use ($apuesta, $maxima_espera){
+                $filtered_matches = array_filter($matches, function($item) use ($apuesta, $apuesta_intervalo){
                     $diff = $item->start_time - strtotime($apuesta->created_at);
-                    return $diff > 0 && $diff < $maxima_espera && $item->game_mode == 22 && $item->lobby_type == 7 && $item->party_size == 1;
+                    return $diff > 0 && $diff < $apuesta_intervalo && $item->game_mode == 22 && $item->lobby_type == 7 && $item->party_size == 1;
                 });
         
                 // Si no encuentra partida, el fronted realizara una nueva busqueda
