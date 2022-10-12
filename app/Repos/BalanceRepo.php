@@ -39,7 +39,7 @@ class BalanceRepo {
             UNION
             SELECT UNIX_TIMESTAMP(created_at) AS 'fecha', monto * -1, 'RETIRO' AS 'concepto' FROM retiro WHERE usuario_id = ?
             UNION
-            SELECT UNIX_TIMESTAMP(created_at) AS 'fecha', IF(estado=1,monto,monto*-1) AS 'monto', IF(estado=1,'APUESTA GANADA', 'APUESTA PERDIDA') AS 'concepto' FROM apuesta WHERE usuario_id = ?
+            SELECT UNIX_TIMESTAMP(created_at) AS 'fecha', IF(estado=1,monto*0.4,monto*-1) AS 'monto',  CASE estado WHEN 0 then 'EN PROCESO' WHEN 1 THEN 'APUESTA GANADA' ELSE 'APUESTA PERDIDA' END AS 'concepto' FROM apuesta WHERE usuario_id = ?
             ) a ORDER BY fecha DESC
         ";
         return DB::select($sql, [$this->usuario->id, $this->usuario->id, $this->usuario->id]);
@@ -55,7 +55,7 @@ class BalanceRepo {
 
     public function retirar($params){
         if($this->usuario->allow_withdraw == 0)
-            throw new \Exception("Por el momento no puedes hacer retiros");
+            throw new \Exception("Por el momento no puedes hacer retiros ya que usaste un código de referidos y tienes que realizar por lo menos 10 apuestas antes de poder retirar");
 
         if($this->usuario->balance < $params['monto'])
             throw new \Exception("No cuentas con saldo suficiente para realizar el retiro");

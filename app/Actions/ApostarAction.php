@@ -18,7 +18,7 @@ class ApostarAction {
     public function execute(Usuario $usuario, $params, Request $req){
 
         if(!$this->hasPublicAccess($usuario))
-            throw new \Exception("No se pudo realizar la apuesta debido a que no habilitaste el acceso público en tu cuenta de Dota 2");
+            throw new \Exception("No se pudo realizar la apuesta porque debes compartir tus estadísticas en Dota2. En el siguiente video te enseñamos a hacerlo.");
 
         $multiplicador = 1.4;
         $monto = $params['monto'];
