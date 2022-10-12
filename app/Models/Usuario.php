@@ -47,7 +47,7 @@ class Usuario extends Authenticatable
     }
 
     public function apuestas_test(){
-        return $this->hasMany(ApuestaTest::class, 'usuario_id', 'id');
+        return $this->hasMany(Test\ApuestaTest::class, 'usuario_id', 'id');
     }    
 
     public function apuestas(){
