@@ -84,7 +84,7 @@ class ProcesarPartidas extends Command
                 $matches = $dotaRepo->getRecentMatches();
         
                 if(isset($matches->error)){
-                    Log::error("Hubo un error al obtener la info del API de Dota: " . $matches->error);
+                    Log::info("Hubo un error al obtener la info del API de Dota: " . $matches->error);
                     continue;
                 }
 
@@ -117,6 +117,9 @@ class ProcesarPartidas extends Command
                     $apuesta->save();
                 } else {
                     Log::info("Error: la diferencia de minutos es mayor a la tolerada");
+                    $apuesta->match_id = $filtered_matches[0]->match_id;
+                    $apuesta->match_start_time = $filtered_matches[0]->start_time;
+                    $apuesta->match_hero_id = $filtered_matches[0]->hero_id;
                     $apuesta->estado = '2';
                     $apuesta->fecha_finalizado = time();
                     $apuesta->save();
