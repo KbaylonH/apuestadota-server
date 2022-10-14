@@ -74,7 +74,7 @@ class ProcesarPartidas extends Command
                 Log::info("timestamp apuesta: " . $apuesta->created_at);
     
                 if(time() - strtotime($apuesta->created_at) > $maxima_espera){
-                    $apuesta->estado = '2';
+                    $apuesta->estado = '3';
                     $apuesta->fecha_finalizado = time();
                     $apuesta->save();
                     continue;
@@ -120,7 +120,7 @@ class ProcesarPartidas extends Command
                     $apuesta->match_id = $filtered_matches[0]->match_id;
                     $apuesta->match_start_time = $filtered_matches[0]->start_time;
                     $apuesta->match_hero_id = $filtered_matches[0]->hero_id;
-                    $apuesta->estado = '2';
+                    $apuesta->estado = '3';
                     $apuesta->fecha_finalizado = time();
                     $apuesta->save();
                 }
