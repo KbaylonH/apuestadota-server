@@ -75,6 +75,7 @@ class ProcesarPartidas extends Command
     
                 if(time() - strtotime($apuesta->created_at) > $maxima_espera){
                     $apuesta->estado = '2';
+                    $apuesta->fecha_finalizado = time();
                     $apuesta->save();
                     continue;
                 }
@@ -87,9 +88,10 @@ class ProcesarPartidas extends Command
                     continue;
                 }
 
-                $filtered_matches = array_filter($matches, function($item) use ($apuesta, $apuesta_intervalo){
-                    $diff = $item->start_time - strtotime($apuesta->created_at);
-                    return $diff > 0 && $diff < $apuesta_intervalo && $item->game_mode == 22 && $item->lobby_type == 7 && $item->party_size == 1;
+                $filtered_matches = array_filter($matches, function($item) use ($apuesta){
+                    //$diff = $item->start_time - strtotime($apuesta->created_at);
+                    //return $diff > 0 && $diff < $apuesta_intervalo && $item->game_mode == 22 && $item->lobby_type == 7 && $item->party_size == 1;
+                    return $item->start_time >= strtotime($apuesta->created_at) && $item->game_mode == 22 && $item->lobby_type == 7 && $item->party_size == 1;
                 });
         
                 // Si no encuentra partida, el fronted realizara una nueva busqueda
@@ -104,13 +106,21 @@ class ProcesarPartidas extends Command
                         continue;
                     }
                 }
-        
-                Log::info("Se encontro una partida para la apuesta #" . $apuesta->id);
-                $apuesta->match_id = $filtered_matches[0]->match_id;
-                $apuesta->match_start_time = $filtered_matches[0]->start_time;
-                $apuesta->match_hero_id = $filtered_matches[0]->hero_id;
-                $apuesta->fecha_proceso = time();
-                $apuesta->save();
+
+                $diff = $filtered_matches[0]->start_time - strtotime($apuesta->created_at);
+                if($diff > 0 && $diff < $apuesta_intervalo){
+                    Log::info("Se encontro una partida para la apuesta #" . $apuesta->id);
+                    $apuesta->match_id = $filtered_matches[0]->match_id;
+                    $apuesta->match_start_time = $filtered_matches[0]->start_time;
+                    $apuesta->match_hero_id = $filtered_matches[0]->hero_id;
+                    $apuesta->fecha_proceso = time();
+                    $apuesta->save();
+                } else {
+                    Log::info("Error: la diferencia de minutos es mayor a la tolerada");
+                    $apuesta->estado = '2';
+                    $apuesta->fecha_finalizado = time();
+                    $apuesta->save();
+                }
             } catch (\Exception $e){
                 Log::error($e);
             }
