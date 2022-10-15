@@ -11,6 +11,7 @@ Route::get("/", function(){
 
 Route::get('restore_tasks', function(){
     DB::table('0_config')->whereIn('id', [1,2,4,5])->update(['valor'=>0]);
+    return response()->json(['success'=>true]);
 });
 
 Route::view('payment_success', 'payment_success')->name('payment.success');
