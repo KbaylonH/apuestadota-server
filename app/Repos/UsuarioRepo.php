@@ -19,7 +19,7 @@ class UsuarioRepo {
         $usuario->steam_time_created = $steamUser['timecreated'];
         $usuario->api_token = Hash::make(Str::random(16));
         $usuario->balance = 0;
-        $usuario->balance_prueba = 0;
+        $usuario->balance_prueba = 100;
         $usuario->test_mode = 0;
         $usuario->allow_withdraw = 1;
         $usuario->ref_code = strtoupper(Str::random(10));
