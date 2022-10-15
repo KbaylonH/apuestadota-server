@@ -66,8 +66,10 @@ class CheckMatchesTest extends Command
 
                 if($match !== null){
 
-                    if(isset($match->error))
-                        throw new \Exception("Hubo un error al obtener la informacion de la partida de dota #" . $apuesta->match_id. ":" . $match->error);
+                    if(isset($match->error)){
+                        Log::info("Hubo un error al obtener la informacion de la partida de dota #" . $apuesta->match_id. ":" . $match->error);
+                        continue;
+                    }
 
                     // Obtenemos los jugadores de la partida
                     $players = $match->players;
