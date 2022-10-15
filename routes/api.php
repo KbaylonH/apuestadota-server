@@ -2,9 +2,15 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+
 
 Route::get("/", function(){
     return response(app()->version());
+});
+
+Route::get('restore_tasks', function(){
+    DB::table('0_config')->whereIn('id', [1,2,4,5])->update(['valor'=>0]);
 });
 
 Route::view('payment_success', 'payment_success')->name('payment.success');
