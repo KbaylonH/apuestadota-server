@@ -16,7 +16,7 @@ class UsuarioRepo {
         $usuario->steamid = (substr($steamID64, -16, 16) - 6561197960265728);
         $usuario->steamid64 = $steamID64;
         $usuario->foto = $steamUser['avatarfull'];
-        $usuario->steam_time_created = $steamUser['timecreated'];
+        $usuario->steam_time_created = isset($steamUser['timecreated']) ? $steamUser['timecreated'] : time();
         $usuario->api_token = Hash::make(Str::random(16));
         $usuario->balance = 0;
         $usuario->balance_prueba = 100;
