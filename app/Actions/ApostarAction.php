@@ -7,6 +7,7 @@
 use App\Models\Usuario;
 use App\Models\Deposito;
 use App\Models\Apuesta;
+use App\Models\Test\ApuestaTest;
 use App\Repos\BalanceRepo;
 use App\Repos\ApuestaRepo;
 use App\Repos\SteamRepo;
@@ -24,10 +25,13 @@ class ApostarAction {
         $monto = $params['monto'];
 
         $repo = new ApuestaRepo($usuario);
-
+        /*
         $emptyApuesta = $repo->getEmptyApuesta();
 
         if($emptyApuesta !== null)
+            throw new \Exception("Solo se puede colocar como máximo 1 apuesta a la vez");*/
+        
+        if( $this->hasApuestasPendientes($usuario) )
             throw new \Exception("Solo se puede colocar como máximo 1 apuesta a la vez");
 
         if($usuario->{$usuario->balance_switch} < $monto)
@@ -86,5 +90,12 @@ class ApostarAction {
     private function hasPublicAccess($usuario){
         $steamRepo = new SteamRepo();
         return $steamRepo->hasPublicAccess($usuario->steamid);
+    }
+
+    private function hasApuestasPendientes($usuario){
+        $has_apuesta = $usuario->apuestas()->where('estado', 0)->first();
+        $has_apuesta_test = $usuario->apuestas_test()->where('estado', 0)->first();
+
+        return $has_apuesta !== null || $has_apuesta_test !== null;
     }
 }
